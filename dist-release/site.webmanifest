@@ -1,0 +1,12 @@
+{
+  "name": "AUTO-CAN Solutions",
+  "short_name": "AUTO-CAN",
+  "description": "Automotive engineering & embedded software since 2013.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070b16",
+  "theme_color": "#070b16",
+  "icons": [
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

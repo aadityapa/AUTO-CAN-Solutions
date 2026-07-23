@@ -1,0 +1,25 @@
+{
+  "name": "autocan-website",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AUTO-CAN Solutions \u2014 Automotive Engineering & Embedded Software. Marketing website.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite-react-ssg build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "framer-motion": "^11.3.19",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0",
+    "vite-react-ssg": "^0.9.1",
+    "three": "^0.165.0",
+    "lenis": "^1.1.14"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}

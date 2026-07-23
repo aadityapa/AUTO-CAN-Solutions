@@ -1,0 +1,24 @@
+# AUTO-CAN Solutions
+
+> Automotive engineering & embedded software company founded in 2013 in Jaipur, India,
+> with delivery centres in Jaipur and Pune. Specializes in Hardware-in-the-Loop (HiL)
+> testing, embedded software stacks (BSW, CAN, LIN, UDS), test automation, embedded
+> hardware, and R&D across AUTOSAR, ISO 26262, ADAS, Automotive Ethernet, OTA and V2X.
+> Serves OEMs and Tier-1 suppliers across North America, Europe, Japan and APAC.
+
+## Key facts
+- Founded: 2013 (Jaipur, Rajasthan, India)
+- Delivery centres: Jaipur, Pune
+- Core domains: Automotive Testing, Development, R&D
+- Engagement models: ODC (Offshore/On-site Development Centre) and Deputation
+- Buffer bench: 25-45% for same-day resource deployment
+- Standards: MISRA C, ISO 26262, AUTOSAR; protocols CAN, LIN, UDS, FlexRay, Automotive Ethernet
+- Contact: info@auto-can.in
+
+## Pages
+- Home: https://www.auto-can-solution.com/
+- Services: https://www.auto-can-solution.com/services
+- Expertise & standards: https://www.auto-can-solution.com/expertise
+- About & history: https://www.auto-can-solution.com/about
+- Careers, engagement models & Campus Connect: https://www.auto-can-solution.com/careers
+- Contact: https://www.auto-can-solution.com/contact
