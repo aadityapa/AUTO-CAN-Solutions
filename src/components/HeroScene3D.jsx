@@ -563,7 +563,7 @@ export default function HeroScene3D() {
 
     let renderer
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
+      renderer = new THREE.WebGLRenderer({ antialias: !coarse, alpha: true, powerPreference: 'high-performance' })
       if (!renderer.getContext()) throw new Error('no-webgl-context')
     } catch (err) {
       // No usable WebGL context — surface to the error boundary for the static fallback.
@@ -572,9 +572,9 @@ export default function HeroScene3D() {
       }
       throw err
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.35 : 1.6))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.08
+    renderer.toneMappingExposure = 1.12
     el.appendChild(renderer.domElement)
 
     const pmrem = new THREE.PMREMGenerator(renderer)
@@ -937,34 +937,54 @@ export default function HeroScene3D() {
     // the procedural body: auto-scaled to the scene, grounded on the mirror
     // floor, centered, and lit by the full cinematic rig. The underglow,
     // contact shadow and light glows are kept.
+    // Load the photoreal model straight away (no HEAD pre-flight round-trip).
+    // The browser has already been told to preload /car.glb in index.html, so
+    // by the time the GLTFLoader chunk arrives the bytes are usually cached.
     let loadedModel = null
-    fetch('/car.glb', { method: 'HEAD' }).then((r) => {
-      const type = (r.headers.get('content-type') || '').toLowerCase()
-      if (!r.ok || !/octet|gltf|model/.test(type)) return
-      import('three/examples/jsm/loaders/GLTFLoader.js').then(({ GLTFLoader }) => {
-        new GLTFLoader().load('/car.glb', (gltf) => {
-          const m = gltf.scene
-          const box = new THREE.Box3().setFromObject(m)
-          const size = box.getSize(new THREE.Vector3())
-          // most car models are longest along X or Z — face the nose to +X
-          if (size.z > size.x) m.rotation.y = -Math.PI / 2
-          const box2 = new THREE.Box3().setFromObject(m)
-          const size2 = box2.getSize(new THREE.Vector3())
-          const scale = 5.1 / Math.max(size2.x, 0.001)
-          m.scale.setScalar(scale)
-          const box3 = new THREE.Box3().setFromObject(m)
-          m.position.y -= box3.min.y
-          m.position.x -= (box3.min.x + box3.max.x) / 2
-          m.position.z -= (box3.min.z + box3.max.z) / 2
-          m.traverse((o) => { if (o.material) o.material.envMapIntensity = 1.35 })
-          // hide procedural body/wheels, keep sprites (shadow, glows) + tagged beams
-          for (const ch of car.children) {
-            if (!(ch instanceof THREE.Sprite) && !ch.userData.keep) ch.visible = false
-          }
-          car.add(m)
-          loadedModel = m
+    import('three/examples/jsm/loaders/GLTFLoader.js').then(({ GLTFLoader }) => {
+      new GLTFLoader().load('/car.glb', (gltf) => {
+        const m = gltf.scene
+        const box = new THREE.Box3().setFromObject(m)
+        const size = box.getSize(new THREE.Vector3())
+        // most car models are longest along X or Z — face the nose to +X
+        if (size.z > size.x) m.rotation.y = -Math.PI / 2
+        const box2 = new THREE.Box3().setFromObject(m)
+        const size2 = box2.getSize(new THREE.Vector3())
+        const scale = 5.1 / Math.max(size2.x, 0.001)
+        m.scale.setScalar(scale)
+        const box3 = new THREE.Box3().setFromObject(m)
+        m.position.y -= box3.min.y
+        m.position.x -= (box3.min.x + box3.max.x) / 2
+        m.position.z -= (box3.min.z + box3.max.z) / 2
+        // Realism pass: crisp studio reflections + glossy clearcoat car paint.
+        m.traverse((o) => {
+          if (!o.isMesh || !o.material) return
+          const mats = Array.isArray(o.material) ? o.material : [o.material]
+          o.material = mats.map((mat) => {
+            mat.envMapIntensity = 1.7
+            // Body panels (painted/metal, not glass) get a wet clearcoat sheen.
+            const isGlass = mat.transparent && mat.opacity < 0.9
+            if (!isGlass && 'metalness' in mat && mat.metalness >= 0.35 && mat.clearcoat === undefined) {
+              const phys = new THREE.MeshPhysicalMaterial()
+              phys.copy(mat)
+              phys.clearcoat = 1
+              phys.clearcoatRoughness = 0.12
+              phys.envMapIntensity = 1.9
+              phys.roughness = Math.max(0.08, mat.roughness * 0.7)
+              return phys
+            }
+            mat.needsUpdate = true
+            return mat
+          })
+          o.material = Array.isArray(o.material) && o.material.length === 1 ? o.material[0] : o.material
         })
-      })
+        // hide procedural body/wheels, keep sprites (shadow, glows) + tagged beams
+        for (const ch of car.children) {
+          if (!(ch instanceof THREE.Sprite) && !ch.userData.keep) ch.visible = false
+        }
+        car.add(m)
+        loadedModel = m
+      }, undefined, () => { /* model unavailable — keep procedural car */ })
     }).catch(() => {})
 
     const { root: robot, shoulder, elbow, spark } = buildRobot(glowTex)

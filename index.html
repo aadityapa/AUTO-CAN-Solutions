@@ -13,8 +13,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+    <!-- Warm up the hero 3D model + poster so they appear near-instantly -->
+    <link rel="preload" href="/car.glb" as="fetch" type="model/gltf-binary" crossorigin="anonymous" />
+    <link rel="preload" href="/hero-graphic.png" as="image" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
+</html>
