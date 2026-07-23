@@ -561,7 +561,17 @@ export default function HeroScene3D() {
     camera.position.set(-0.4, 2.3, 10.4)
     camera.lookAt(-0.1, 0.55, 0)
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
+    let renderer
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
+      if (!renderer.getContext()) throw new Error('no-webgl-context')
+    } catch (err) {
+      // No usable WebGL context — surface to the error boundary for the static fallback.
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('ac-webgl-failed'))
+      }
+      throw err
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.08

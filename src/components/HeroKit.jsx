@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { Component, lazy, Suspense, useEffect, useState } from 'react'
 import { ShieldIcon, BoltIcon, GlobeIcon } from './Icons'
 const HeroScene3D = lazy(() => import('./HeroScene3D'))
 
@@ -65,18 +65,57 @@ export function XRayButton() {
     </button>
   )
 }
+
+// Static fallback shown whenever the WebGL scene can't run (no WebGL context,
+// GPU/driver issue, chunk failed to load, or the model can't be fetched).
+// Guarantees the hero always presents a premium visual.
+function HeroFallback() {
+  return (
+    <div className="scene3d scene3d--fallback" role="img" aria-label="AUTO-CAN digital-twin engineering visualization">
+      <img src="/hero-graphic.png" alt="" width="1000" height="840" loading="eager" decoding="async" />
+    </div>
+  )
+}
+
+// Catches render/runtime errors from the lazy 3D scene (incl. chunk load
+// failures) and swaps in the static fallback instead of an empty panel.
+class HeroErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { failed: false } }
+  static getDerivedStateFromError() { return { failed: true } }
+  componentDidCatch() { /* swallowed — fallback covers the UX */ }
+  render() { return this.state.failed ? <HeroFallback /> : this.props.children }
+}
+
+// Detect WebGL support once on the client.
+function hasWebGL() {
+  try {
+    const c = document.createElement('canvas')
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')))
+  } catch { return false }
+}
+
 export function HeroVisual() {
   // Client-only mount: the WebGL scene is skipped during static prerender
   // and lazy-loaded after hydration, so SEO HTML stays instant.
   const [ready, setReady] = useState(false)
-  useEffect(() => { setReady(true) }, [])
+  const [webgl, setWebgl] = useState(true)
+  useEffect(() => {
+    setWebgl(hasWebGL())
+    setReady(true)
+    const onFail = () => setWebgl(false)
+    window.addEventListener('ac-webgl-failed', onFail)
+    return () => window.removeEventListener('ac-webgl-failed', onFail)
+  }, [])
   return (
     <div className="hero__visual hero__visual--3d">
       <motion.div className="scene3d__frame" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
-        {ready && (
-          <Suspense fallback={<div className="scene3d scene3d--loading" aria-hidden="true" />}>
-            <HeroScene3D />
-          </Suspense>
+        {ready && !webgl && <HeroFallback />}
+        {ready && webgl && (
+          <HeroErrorBoundary>
+            <Suspense fallback={<div className="scene3d scene3d--loading" aria-hidden="true" />}>
+              <HeroScene3D />
+            </Suspense>
+          </HeroErrorBoundary>
         )}
         <CycleCard items={SPEC_STACK[0]} interval={4200} floatDur={4} className="chip3d--1" icon={<span className="chip3d__ico chip3d__ico--orange"><BoltIcon /></span>} />
         <CycleCard items={SPEC_STACK[1]} interval={5300} floatDur={4.6} className="chip3d--2" icon={<span className="chip3d__ico chip3d__ico--blue"><ShieldIcon /></span>} />
