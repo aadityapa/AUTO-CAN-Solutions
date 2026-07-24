@@ -1235,3 +1235,25 @@
   .whud__dot, .whud__fill, .scene-scan::before { animation: none; }
   .scene-scan::before { display: none; }
 }
+
+/* Photoreal hero media (video / image) — fills the scene panel */
+.scene3d--media { padding: 0; overflow: hidden; display: block; background: #05070d; }
+.scene3d--media video,
+.scene3d--media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
+}
+
+/* Cinematic scrim over the hero media so HUD text stays readable */
+.scene-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 26px;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 6, 12, 0.55) 0%, transparent 22%, transparent 74%, rgba(4, 6, 12, 0.6) 100%);
+}

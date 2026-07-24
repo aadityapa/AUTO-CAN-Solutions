@@ -916,7 +916,7 @@ export default function HeroScene3D() {
     // The browser has already been told to preload /car.glb in index.html, so
     // by the time the GLTFLoader chunk arrives the bytes are usually cached.
     let loadedModel = null
-    let humanModel = null, humanBaseY = 0, humanBaseRot = 0, humanRing = null, humanScan = null
+    let humanModel = null, humanBaseY = 0, humanBaseRot = 0, humanBaseX = 0, humanRing = null, humanScan = null
     import('three/examples/jsm/loaders/GLTFLoader.js').then(({ GLTFLoader }) => {
       new GLTFLoader().load('/car.glb', (gltf) => {
         const m = gltf.scene
@@ -996,8 +996,14 @@ export default function HeroScene3D() {
           if (!o.isMesh || !o.material) return
           const textured = Array.isArray(o.material) ? o.material.some((m) => m.map) : o.material.map
           if (textured) return   // photoreal model: keep authored textures
-          const c = skin[partKey(o)] || skin.Coverall
-          o.material = new THREE.MeshBasicMaterial({ color: c.color, toneMapped: false })
+          if (o.geometry && o.geometry.attributes && o.geometry.attributes.color) {
+            // model carries baked directional shading in its vertex colours →
+            // renders as a properly-lit 3D character (not a flat cartoon)
+            o.material = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false })
+          } else {
+            const c = skin[partKey(o)] || skin.Coverall
+            o.material = new THREE.MeshBasicMaterial({ color: c.color, toneMapped: false })
+          }
         })
         // strong frontal key + fill + cyan rim so the technician is fully lit
         const hKey = new THREE.SpotLight(0xffffff, 140, 11, Math.PI / 4, 0.5, 1.0)
@@ -1038,7 +1044,7 @@ export default function HeroScene3D() {
         world.add(scanBeam)
         humanScan = scanBeam
         world.add(h)
-        humanModel = h; humanBaseY = h.position.y; humanBaseRot = h.rotation.y; humanRing = hRing
+        humanModel = h; humanBaseY = h.position.y; humanBaseRot = h.rotation.y; humanBaseX = h.position.x; humanRing = hRing
       }, undefined, () => { /* no human model provided — scene shows car + robot only */ })
     }).catch(() => {})
 
@@ -1227,11 +1233,14 @@ export default function HeroScene3D() {
       }
       // (holographic engineer removed)
       if (humanModel) {
-        humanModel.position.y = humanBaseY + Math.sin(t * 1.25) * 0.014
-        humanModel.rotation.y = humanBaseRot + Math.sin(t * 0.5) * 0.04
+        // livelier idle: breathing bob + weight shift + a slow glance between car and tablet
+        humanModel.position.y = humanBaseY + Math.sin(t * 1.7) * 0.022
+        humanModel.rotation.y = humanBaseRot + Math.sin(t * 0.42) * 0.13 + Math.sin(t * 1.1) * 0.03
+        humanModel.rotation.z = Math.sin(t * 0.85) * 0.012
+        humanModel.position.x = humanBaseX + Math.sin(t * 0.42) * 0.05
       }
-      if (humanRing) humanRing.rotation.z = t * 0.32
-      if (humanScan) humanScan.material.opacity = 0.08 + Math.abs(Math.sin(t * 1.9)) * 0.16
+      if (humanRing) humanRing.rotation.z = t * 0.45
+      if (humanScan) humanScan.material.opacity = 0.06 + Math.abs(Math.sin(t * 2.1)) * 0.2
       // totems pulse
       for (let i = 0; i < totems.length; i++) {
         totems[i].icon.material.opacity = 0.5 + Math.abs(Math.sin(t * 1.6 + i * 2)) * 0.5
