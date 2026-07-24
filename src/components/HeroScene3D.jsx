@@ -1000,9 +1000,9 @@ export default function HeroScene3D() {
         h.scale.setScalar(hScale)
         const hb2 = new THREE.Box3().setFromObject(h)
         h.position.y -= hb2.min.y                              // feet on the floor
-        h.position.x = 2.2                                     // stands clear, beside the front wing
-        h.position.z = 2.05                                    // toward the viewer, out of the car footprint
-        h.rotation.y = -Math.PI * 0.66                         // turned in toward the car
+        h.position.x = 1.25                                    // beside the front wing, clear of the HUD chips
+        h.position.z = 3.15                                    // well forward — reads larger and sits below the chips
+        h.rotation.y = -Math.PI * 0.34                         // 3/4 toward the viewer, glancing at the car
         // Style the technician by part name (from human.glb): dark coverall,
         // light safety helmet, glowing cyan AR visor, cyan-accent gloves.
         // A textured/photoreal model (has a base-color map) is left as authored.
