@@ -695,33 +695,8 @@ export default function HeroScene3D() {
       scanBeams.push(b)
     }
 
-    // ---- holographic engineer avatar with tablet ----
-    const engineer = new THREE.Group()
-    const holoMat = new THREE.MeshBasicMaterial({
-      color: BLUE_SOFT, transparent: true, opacity: 0.42,
-      blending: THREE.AdditiveBlending, depthWrite: false,
-    })
-    const legL = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.62, 3, 8), holoMat)
-    legL.position.set(0, 0.42, 0.1)
-    const legR = legL.clone(); legR.position.z = -0.1
-    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.15, 0.5, 3, 10), holoMat)
-    torso.position.y = 1.12
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 10), holoMat)
-    head.position.y = 1.62
-    const armUp = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.4, 3, 8), holoMat)
-    armUp.position.set(0.22, 1.2, 0)
-    armUp.rotation.z = -1.1
-    const tablet = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.24), new THREE.MeshBasicMaterial({
-      color: 0xbfdcff, transparent: true, opacity: 0.5,
-      blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
-    }))
-    tablet.position.set(0.4, 1.25, 0)
-    tablet.rotation.y = -0.9
-    engineer.add(legL, legR, torso, head, armUp, tablet)
-    engineer.position.set(4.35, 0, 1.6)
-    engineer.scale.setScalar(1.15)
-    engineer.rotation.y = -2.3 // facing the car
-    world.add(engineer)
+    // (Old translucent holographic avatar removed — the real technician is
+    //  now loaded from /human.glb and placed beside the car.)
 
     // ---- holo icon totems on the platform corners ----
     const totems = []
@@ -941,6 +916,7 @@ export default function HeroScene3D() {
     // The browser has already been told to preload /car.glb in index.html, so
     // by the time the GLTFLoader chunk arrives the bytes are usually cached.
     let loadedModel = null
+    let humanModel = null, humanBaseY = 0, humanBaseRot = 0, humanRing = null, humanScan = null
     import('three/examples/jsm/loaders/GLTFLoader.js').then(({ GLTFLoader }) => {
       new GLTFLoader().load('/car.glb', (gltf) => {
         const m = gltf.scene
@@ -993,69 +969,76 @@ export default function HeroScene3D() {
       // If the file isn't present nothing shows (no error).
       new GLTFLoader().load('/human.glb', (gltf) => {
         const h = gltf.scene
-        // scale to ~1.8 scene units tall (a person next to a 5.1-unit car)
         const hb = new THREE.Box3().setFromObject(h)
         const hs = hb.getSize(new THREE.Vector3())
-        const hScale = 1.8 / Math.max(hs.y, 0.001)
-        h.scale.setScalar(hScale)
+        h.scale.setScalar(1.82 / Math.max(hs.y, 0.001))         // ~human height
         const hb2 = new THREE.Box3().setFromObject(h)
-        h.position.y -= hb2.min.y                              // feet on the floor
-        h.position.x = 1.25                                    // beside the front wing, clear of the HUD chips
-        h.position.z = 3.15                                    // well forward — reads larger and sits below the chips
-        h.rotation.y = -Math.PI * 0.34                         // 3/4 toward the viewer, glancing at the car
-        // Style the technician by part name (from human.glb): dark coverall,
-        // light safety helmet, glowing cyan AR visor, cyan-accent gloves.
-        // A textured/photoreal model (has a base-color map) is left as authored.
+        h.position.y -= hb2.min.y                               // feet on the floor
+        h.position.x = 0.95                                     // clear of the Cyber-Security chip
+        h.position.z = 3.35                                     // forward toward the viewer
+        h.rotation.y = -Math.PI * 0.34                          // 3/4 toward the viewer, glancing at the car
+        // Colour the technician by part name: blue coverall, safety helmet,
+        // glowing cyan AR visor, cyan gloves. Textured models are left as-is.
         const skin = {
-          Coverall: { color: 0x2f3a4f, roughness: 0.6, metalness: 0.2, emissive: 0x0a1220, emissiveIntensity: 0.45 },
-          Head:     { color: 0x27303f, roughness: 0.7, metalness: 0.1, emissive: 0x0a1018, emissiveIntensity: 0.4 },
-          Helmet:   { color: 0xdfe5ef, roughness: 0.32, metalness: 0.35, emissive: 0x1a2230, emissiveIntensity: 0.25 },
-          Visor:    { color: 0x67e8f9, roughness: 0.15, metalness: 0.1, emissive: 0x2fd6ec, emissiveIntensity: 1.9 },
-          Glove:    { color: 0x2c5f7a, roughness: 0.45, metalness: 0.25, emissive: 0x0a2230, emissiveIntensity: 0.5 },
-          Boot:     { color: 0x14181f, roughness: 0.6, metalness: 0.2, emissive: 0x000000, emissiveIntensity: 0 },
+          Coverall: { color: 0x2d5aaf },   // deep engineer-blue coverall
+          Head:     { color: 0xe0bd98 },   // skin
+          Helmet:   { color: 0xffb43e },   // safety-orange hard hat
+          Visor:    { color: 0x8ff2ff },   // cyan AR visor
+          Glove:    { color: 0x5ec2ec },   // cyan gloves
+          Boot:     { color: 0x33394a },   // dark boots
+          Vest:     { color: 0xdff23a },   // hi-vis safety vest
         }
         const partKey = (o) => {
-          const n = `${o.name} ${o.material && o.material.name || ''}`
+          const n = (o.name || '') + ' ' + ((o.material && o.material.name) || '')
           return Object.keys(skin).find((k) => n.includes(k))
         }
         h.traverse((o) => {
           if (!o.isMesh || !o.material) return
           const textured = Array.isArray(o.material) ? o.material.some((m) => m.map) : o.material.map
-          if (textured) {
-            const mats = Array.isArray(o.material) ? o.material : [o.material]
-            mats.forEach((m) => { m.envMapIntensity = 0.95; m.needsUpdate = true })
-            return
-          }
-          const s = skin[partKey(o)] || skin.Coverall
-          o.material = new THREE.MeshStandardMaterial({
-            color: s.color, roughness: s.roughness, metalness: s.metalness,
-            emissive: s.emissive, emissiveIntensity: s.emissiveIntensity, envMapIntensity: 0.6,
-          })
+          if (textured) return   // photoreal model: keep authored textures
+          const c = skin[partKey(o)] || skin.Coverall
+          o.material = new THREE.MeshBasicMaterial({ color: c.color, toneMapped: false })
         })
-        // key light (form) + cyan rim light (crisp separation from the dark scene)
-        const hKey = new THREE.SpotLight(0xeaf1ff, 30, 7.5, Math.PI / 5, 0.6, 1.2)
-        hKey.position.set(h.position.x + 1.5, 3.6, h.position.z + 1.3)
-        hKey.target.position.set(h.position.x, 1.1, h.position.z)
+        // strong frontal key + fill + cyan rim so the technician is fully lit
+        const hKey = new THREE.SpotLight(0xffffff, 140, 11, Math.PI / 4, 0.5, 1.0)
+        hKey.position.set(h.position.x + 1.1, 3.4, h.position.z + 3.4)
+        hKey.target.position.set(h.position.x, 1.05, h.position.z)
         world.add(hKey, hKey.target)
-        const hRim = new THREE.PointLight(0x67e8f9, 14, 4)
-        hRim.position.set(h.position.x - 0.8, 1.7, h.position.z - 0.9)
+        const hFill = new THREE.PointLight(0xcfe0ff, 40, 7)
+        hFill.position.set(h.position.x + 0.2, 1.7, h.position.z + 1.8)
+        world.add(hFill)
+        const hRim = new THREE.PointLight(0x67e8f9, 22, 4.5)
+        hRim.position.set(h.position.x - 0.9, 1.85, h.position.z - 0.8)
         world.add(hRim)
         // holographic inspection tablet in front of the figure — "AI workshop" cue
-        const tabletMat = new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })
-        const tablet = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.28), tabletMat)
-        tablet.position.set(h.position.x - 0.34, 1.15, h.position.z + 0.36)
-        tablet.rotation.set(-0.5, -0.7, 0.05)
+        const tablet = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.28),
+          new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }))
+        tablet.position.set(h.position.x + 0.3, 1.18, h.position.z + 0.4)
+        tablet.rotation.set(-0.5, 0.5, -0.05)
         world.add(tablet)
         const tabletGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x67e8f9, transparent: true, opacity: 0.4, depthWrite: false }))
-        tabletGlow.scale.set(0.9, 0.7, 1)
-        tabletGlow.position.copy(tablet.position)
-        world.add(tabletGlow)
+        tabletGlow.scale.set(0.9, 0.7, 1); tabletGlow.position.copy(tablet.position); world.add(tabletGlow)
         // soft contact shadow under the figure
         const hShadow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x000000, transparent: true, opacity: 0.42, depthWrite: false }))
-        hShadow.scale.set(1.0, 0.46, 1)
-        hShadow.position.set(h.position.x, 0.02, h.position.z)
-        world.add(hShadow)
+        hShadow.scale.set(1.0, 0.46, 1); hShadow.position.set(h.position.x, 0.02, h.position.z); world.add(hShadow)
+        const hRing = new THREE.Mesh(
+          new THREE.TorusGeometry(0.62, 0.014, 8, 48),
+          new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
+        )
+        hRing.rotation.x = Math.PI / 2
+        hRing.position.set(h.position.x, 0.03, h.position.z)
+        world.add(hRing)
+        // scanning beam from the tablet toward the car (inspection cue)
+        const scanBeam = new THREE.Mesh(
+          new THREE.PlaneGeometry(2.4, 0.14),
+          new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.14, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false })
+        )
+        scanBeam.position.set(h.position.x - 1.15, 1.05, h.position.z - 0.55)
+        scanBeam.rotation.set(-0.15, 0.7, 0.02)
+        world.add(scanBeam)
+        humanScan = scanBeam
         world.add(h)
+        humanModel = h; humanBaseY = h.position.y; humanBaseRot = h.rotation.y; humanRing = hRing
       }, undefined, () => { /* no human model provided — scene shows car + robot only */ })
     }).catch(() => {})
 
@@ -1242,10 +1225,13 @@ export default function HeroScene3D() {
       for (let i = 0; i < scanBeams.length; i++) {
         scanBeams[i].material.opacity = 0.02 + Math.abs(Math.sin(t * 1.2 + i * 1.1)) * 0.06
       }
-      // holographic engineer: breathing + tablet flicker
-      engineer.position.y = Math.sin(t * 1.1) * 0.03
-      holoMat.opacity = 0.36 + Math.abs(Math.sin(t * 1.4)) * 0.12
-      tablet.material.opacity = 0.35 + Math.abs(Math.sin(t * 2.8)) * 0.3
+      // (holographic engineer removed)
+      if (humanModel) {
+        humanModel.position.y = humanBaseY + Math.sin(t * 1.25) * 0.014
+        humanModel.rotation.y = humanBaseRot + Math.sin(t * 0.5) * 0.04
+      }
+      if (humanRing) humanRing.rotation.z = t * 0.32
+      if (humanScan) humanScan.material.opacity = 0.08 + Math.abs(Math.sin(t * 1.9)) * 0.16
       // totems pulse
       for (let i = 0; i < totems.length; i++) {
         totems[i].icon.material.opacity = 0.5 + Math.abs(Math.sin(t * 1.6 + i * 2)) * 0.5

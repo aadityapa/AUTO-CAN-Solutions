@@ -66,9 +66,38 @@ export function XRayButton() {
   )
 }
 
-// Static fallback shown whenever the WebGL scene can't run (no WebGL context,
-// GPU/driver issue, chunk failed to load, or the model can't be fetched).
-// Guarantees the hero always presents a premium visual.
+// Live "operations console" header — sells a working robotic AI workshop.
+const WHUD_LINES = [
+  'ROBOTIC WELD CELL · ACTIVE',
+  'DIGITAL-TWIN SYNC · 99.2%',
+  'AI VISION INSPECT · PASS',
+  'TORQUE CALIBRATION · OK',
+  'SEAM SCAN · 1,248 PTS',
+]
+export function WorkshopHUD() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = setInterval(() => setI((v) => (v + 1) % WHUD_LINES.length), 2600)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <div className="whud" aria-hidden="true">
+      <span className="whud__dot" />
+      <span className="whud__brand">AI WORKSHOP</span>
+      <span className="whud__sep" />
+      <span className="whud__cell">CELL 01</span>
+      <span className="whud__sep" />
+      <motion.span key={i} className="whud__status"
+        initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+        {WHUD_LINES[i]}
+      </motion.span>
+      <span className="whud__bar"><span className="whud__fill" /></span>
+    </div>
+  )
+}
+
+// Static fallback shown whenever the WebGL scene can't run.
 function HeroFallback() {
   return (
     <div className="scene3d scene3d--fallback" role="img" aria-label="AUTO-CAN digital-twin engineering visualization">
@@ -77,8 +106,7 @@ function HeroFallback() {
   )
 }
 
-// Catches render/runtime errors from the lazy 3D scene (incl. chunk load
-// failures) and swaps in the static fallback instead of an empty panel.
+// Catches render/runtime errors from the lazy 3D scene and swaps in the fallback.
 class HeroErrorBoundary extends Component {
   constructor(props) { super(props); this.state = { failed: false } }
   static getDerivedStateFromError() { return { failed: true } }
@@ -95,8 +123,6 @@ function hasWebGL() {
 }
 
 export function HeroVisual() {
-  // Client-only mount: the WebGL scene is skipped during static prerender
-  // and lazy-loaded after hydration, so SEO HTML stays instant.
   const [ready, setReady] = useState(false)
   const [webgl, setWebgl] = useState(true)
   useEffect(() => {
@@ -117,6 +143,8 @@ export function HeroVisual() {
             </Suspense>
           </HeroErrorBoundary>
         )}
+        {ready && webgl && <span className="scene-scan" aria-hidden="true" />}
+        <WorkshopHUD />
         <CycleCard items={SPEC_STACK[0]} interval={4200} floatDur={4} className="chip3d--1" icon={<span className="chip3d__ico chip3d__ico--orange"><BoltIcon /></span>} />
         <CycleCard items={SPEC_STACK[1]} interval={5300} floatDur={4.6} className="chip3d--2" icon={<span className="chip3d__ico chip3d__ico--blue"><ShieldIcon /></span>} />
         <CycleCard items={SPEC_STACK[2]} interval={6100} floatDur={5.2} className="chip3d--3" icon={<span className="chip3d__ico chip3d__ico--orange"><GlobeIcon /></span>} />

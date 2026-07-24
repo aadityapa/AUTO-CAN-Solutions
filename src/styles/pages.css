@@ -1144,3 +1144,94 @@
   object-fit: cover;
   border-radius: inherit;
 }
+
+/* ============================================================
+   AI-WORKSHOP OPS HUD (hero scene overlay)
+   ============================================================ */
+.whud {
+  position: absolute;
+  top: 14px; left: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 92%;
+  padding: 8px 14px;
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  color: var(--text-dim);
+  background: rgba(9, 13, 24, 0.72);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: var(--rim), 0 14px 34px -18px rgba(0, 0, 0, 0.8);
+}
+.whud__dot {
+  width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%;
+  background: #34e5a4;
+  box-shadow: 0 0 10px #34e5a4, 0 0 3px #b6ffe6;
+  animation: whudPulse 1.8s ease-in-out infinite;
+}
+@keyframes whudPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.whud__brand { color: var(--text); font-weight: 600; letter-spacing: 0.18em; }
+.whud__cell { color: var(--cyan-300); }
+.whud__sep { width: 1px; height: 12px; background: var(--border-strong); }
+.whud__status { color: var(--text-dim); min-width: 168px; }
+.whud__bar {
+  position: relative;
+  width: 58px; height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  flex: 0 0 58px;
+}
+.whud__fill {
+  position: absolute;
+  top: 0; left: 0; height: 100%;
+  width: 40%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent, var(--cyan-400), transparent);
+  animation: whudScan 2.2s var(--ease-lux) infinite;
+}
+@keyframes whudScan {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
+
+/* active scan sweep across the whole scene panel */
+.scene-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 26px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.scene-scan::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 40%;
+  top: -40%;
+  background: linear-gradient(180deg, transparent, rgba(103, 232, 249, 0.06) 60%, rgba(103, 232, 249, 0.12));
+  animation: sceneScan 6.5s linear infinite;
+}
+@keyframes sceneScan {
+  0% { transform: translateY(0); opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { transform: translateY(360%); opacity: 0; }
+}
+
+@media (max-width: 620px) {
+  .whud__status { min-width: 0; }
+  .whud { font-size: 9px; gap: 7px; padding: 7px 11px; }
+  .whud__cell, .whud__bar { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .whud__dot, .whud__fill, .scene-scan::before { animation: none; }
+  .scene-scan::before { display: none; }
+}
