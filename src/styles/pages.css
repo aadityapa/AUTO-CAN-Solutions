@@ -1173,9 +1173,7 @@
   width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%;
   background: #34e5a4;
   box-shadow: 0 0 10px #34e5a4, 0 0 3px #b6ffe6;
-  animation: whudPulse 1.8s ease-in-out infinite;
 }
-@keyframes whudPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .whud__brand { color: var(--text); font-weight: 600; letter-spacing: 0.18em; }
 .whud__cell { color: var(--cyan-300); }
 .whud__sep { width: 1px; height: 12px; background: var(--border-strong); }
@@ -1256,4 +1254,71 @@
   pointer-events: none;
   background:
     linear-gradient(180deg, rgba(4, 6, 12, 0.55) 0%, transparent 22%, transparent 74%, rgba(4, 6, 12, 0.6) 100%);
+}
+
+/* ============================================================
+   WORKSHOP CONSOLE DRESSING (hero panel)
+   ============================================================ */
+/* camera-viewfinder corner brackets */
+.scene-corners { position: absolute; inset: 10px; z-index: 4; pointer-events: none; }
+.scene-corners::before,
+.scene-corners::after {
+  content: '';
+  position: absolute;
+  width: 26px; height: 26px;
+  border: 1.5px solid rgba(103, 232, 249, 0.45);
+}
+.scene-corners::before { top: 0; left: 0; border-right: 0; border-bottom: 0; border-top-left-radius: 8px; }
+.scene-corners::after { bottom: 0; right: 0; border-left: 0; border-top: 0; border-bottom-right-radius: 8px; }
+
+/* live camera tag with ticking clock */
+.camtag {
+  position: absolute;
+  bottom: 14px; left: 16px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+  background: rgba(9, 13, 24, 0.7);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.camtag__dot { width: 6px; height: 6px; border-radius: 50%; background: #ff5d5d; box-shadow: 0 0 8px rgba(255, 93, 93, 0.7); }
+
+/* station status strip */
+.statstrip {
+  position: absolute;
+  bottom: 14px; right: 16px;
+  z-index: 5;
+  display: flex;
+  gap: 14px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  background: rgba(9, 13, 24, 0.7);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  white-space: nowrap;
+}
+.statstrip span { display: inline-flex; align-items: center; gap: 6px; }
+.statstrip i.ok {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #34e5a4;
+  box-shadow: 0 0 6px rgba(52, 229, 164, 0.7);
+}
+
+@media (max-width: 760px) {
+  .statstrip { display: none; }          /* keep mobile clean */
+  .camtag { bottom: 10px; left: 12px; font-size: 9px; }
 }

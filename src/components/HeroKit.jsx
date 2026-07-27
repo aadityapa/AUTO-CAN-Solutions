@@ -114,6 +114,33 @@ class HeroErrorBoundary extends Component {
   render() { return this.state.failed ? <HeroFallback /> : this.props.children }
 }
 
+// Live camera tag — monitoring-console cue with a real ticking clock.
+export function CamTag() {
+  const [now, setNow] = useState('')
+  useEffect(() => {
+    const tick = () => setNow(new Date().toLocaleTimeString('en-GB', { hour12: false }))
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <div className="camtag" aria-hidden="true">
+      <span className="camtag__dot" />
+      LIVE · {now}
+    </div>
+  )
+}
+
+// Station status strip — bottom console readout.
+export function StatusStrip() {
+  return (
+    <div className="statstrip" aria-hidden="true">
+      <span><i className="ok" />ROBOT · ACTIVE</span>
+      <span><i className="ok" />TECH · ON STATION</span>
+    </div>
+  )
+}
+
 // Detect WebGL support once on the client.
 function hasWebGL() {
   try {
@@ -122,71 +149,41 @@ function hasWebGL() {
   } catch { return false }
 }
 
-// HEAD-probe helper — resolves true only if the asset really exists (no 404 noise).
-async function assetExists(url) {
-  try { const r = await fetch(url, { method: 'HEAD' }); return r.ok } catch { return false }
-}
-
 /**
- * Hero visual with a photoreal-first strategy:
- *   1. /hero.mp4                → play it (autoplay, muted, looped)
- *   2. /hero.webp|.jpg|.png     → show it
- *   3. otherwise                → the live interactive 3D scene (with its
- *                                 own WebGL/static fallback)
- * The premium glass HUD + spec chips overlay on top in every mode, so a
- * photoreal clip reads as real footage with an AR engineering overlay.
+ * Hero visual — the live 3D AI-workshop scene, dressed as a real
+ * monitoring console: corner brackets, live camera tag, ops HUD and
+ * station status strip. Falls back to the poster if WebGL is unavailable.
  */
 export function HeroVisual() {
-  const [mode, setMode] = useState(null)   // { type: 'video'|'image'|'3d', src? }
+  const [ready, setReady] = useState(false)
   const [webgl, setWebgl] = useState(true)
   useEffect(() => {
-    let cancelled = false
+    setWebgl(hasWebGL())
+    setReady(true)
     const onFail = () => setWebgl(false)
     window.addEventListener('ac-webgl-failed', onFail)
-    ;(async () => {
-      if (await assetExists('/hero.mp4')) { if (!cancelled) setMode({ type: 'video', src: '/hero.mp4' }); return }
-      for (const img of ['/hero.webp', '/hero.jpg', '/hero.png']) {
-        if (await assetExists(img)) { if (!cancelled) setMode({ type: 'image', src: img }); return }
-      }
-      if (!cancelled) { setWebgl(hasWebGL()); setMode({ type: '3d' }) }
-    })()
-    return () => { cancelled = true; window.removeEventListener('ac-webgl-failed', onFail) }
+    return () => window.removeEventListener('ac-webgl-failed', onFail)
   }, [])
-
-  const is3d = mode && mode.type === '3d'
-  const showScan = mode && (mode.type !== '3d' || webgl)
   return (
     <div className="hero__visual hero__visual--3d">
       <motion.div className="scene3d__frame" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
-        {!mode && <div className="scene3d scene3d--loading" aria-hidden="true" />}
-
-        {mode && mode.type === 'video' && (
-          <video className="scene3d scene3d--media" src={mode.src}
-            autoPlay muted loop playsInline preload="metadata" poster="/hero-poster.jpg"
-            aria-label="AUTO-CAN automotive AI workshop" />
-        )}
-        {mode && mode.type === 'image' && (
-          <div className="scene3d scene3d--media" role="img" aria-label="AUTO-CAN automotive AI workshop">
-            <img src={mode.src} alt="" decoding="async" />
-          </div>
-        )}
-
-        {is3d && !webgl && <HeroFallback />}
-        {is3d && webgl && (
+        {ready && !webgl && <HeroFallback />}
+        {ready && webgl && (
           <HeroErrorBoundary>
             <Suspense fallback={<div className="scene3d scene3d--loading" aria-hidden="true" />}>
               <HeroScene3D />
             </Suspense>
           </HeroErrorBoundary>
         )}
-
-        {showScan && <span className="scene-scan" aria-hidden="true" />}
         <span className="scene-scrim" aria-hidden="true" />
+        <span className="scene-corners" aria-hidden="true" />
         <WorkshopHUD />
+        <CamTag />
+        <StatusStrip />
         <CycleCard items={SPEC_STACK[0]} interval={4200} floatDur={4} className="chip3d--1" icon={<span className="chip3d__ico chip3d__ico--orange"><BoltIcon /></span>} />
         <CycleCard items={SPEC_STACK[1]} interval={5300} floatDur={4.6} className="chip3d--2" icon={<span className="chip3d__ico chip3d__ico--blue"><ShieldIcon /></span>} />
         <CycleCard items={SPEC_STACK[2]} interval={6100} floatDur={5.2} className="chip3d--3" icon={<span className="chip3d__ico chip3d__ico--orange"><GlobeIcon /></span>} />
-        {is3d && <XRayButton />}
+        <XRayButton />
       </motion.div>
     </div>
   )

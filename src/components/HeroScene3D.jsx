@@ -552,6 +552,7 @@ export default function HeroScene3D() {
   useEffect(() => {
     const el = mountRef.current
     if (!el) return
+    try {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const coarse = window.matchMedia('(pointer: coarse)').matches
 
@@ -1379,6 +1380,10 @@ export default function HeroScene3D() {
       })
       renderer.dispose()
       el.removeChild(renderer.domElement)
+    }
+    } catch (err) {
+      // any scene-init failure → graceful poster fallback, never a black panel
+      window.dispatchEvent(new CustomEvent('ac-webgl-failed'))
     }
   }, [])
 

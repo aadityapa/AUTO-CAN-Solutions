@@ -20,11 +20,11 @@ export default function AmbientBackground() {
 
     // fluid colour pools — curved lissajous drift so they fold into each other
     const pools = [
-      { rgb: [56, 189, 248],  r: 0.5,  sx: 0.22, sy: 0.2,  ax: 0.2,  ay: 0.13, fx: 0.9,  fy: 1.3, ph: 0.0, a: 0.1 },
-      { rgb: [99, 102, 241],  r: 0.55, sx: 0.78, sy: 0.3,  ax: 0.17, ay: 0.16, fx: 1.2,  fy: 0.8, ph: 2.0, a: 0.09 },
-      { rgb: [45, 212, 191],  r: 0.45, sx: 0.5,  sy: 0.78, ax: 0.22, ay: 0.12, fx: 0.7,  fy: 1.1, ph: 4.1, a: 0.09 },
-      { rgb: [34, 211, 238],  r: 0.34, sx: 0.35, sy: 0.5,  ax: 0.14, ay: 0.18, fx: 1.4,  fy: 0.6, ph: 1.1, a: 0.07 },
-      { rgb: [129, 140, 248], r: 0.3,  sx: 0.66, sy: 0.62, ax: 0.16, ay: 0.14, fx: 0.8,  fy: 1.5, ph: 3.2, a: 0.06 },
+      { rgb: [56, 189, 248],  r: 0.52, sx: 0.22, sy: 0.2,  ax: 0.22, ay: 0.14, fx: 0.9,  fy: 1.3, ph: 0.0, a: 0.15 },
+      { rgb: [99, 102, 241],  r: 0.56, sx: 0.78, sy: 0.3,  ax: 0.19, ay: 0.17, fx: 1.2,  fy: 0.8, ph: 2.0, a: 0.13 },
+      { rgb: [45, 212, 191],  r: 0.47, sx: 0.5,  sy: 0.78, ax: 0.24, ay: 0.13, fx: 0.7,  fy: 1.1, ph: 4.1, a: 0.13 },
+      { rgb: [34, 211, 238],  r: 0.36, sx: 0.35, sy: 0.5,  ax: 0.16, ay: 0.19, fx: 1.4,  fy: 0.6, ph: 1.1, a: 0.11 },
+      { rgb: [129, 140, 248], r: 0.32, sx: 0.66, sy: 0.62, ax: 0.18, ay: 0.15, fx: 0.8,  fy: 1.5, ph: 3.2, a: 0.09 },
     ]
 
     const buildBubbles = () => {
@@ -45,8 +45,9 @@ export default function AmbientBackground() {
     const drawPools = (time) => {
       ctx.globalCompositeOperation = 'lighter'    // colours mix like inks
       const T = time * 0.00006
+      const current = (time * 0.000012) % 1   // slow left→right drift
       for (const p of pools) {
-        const cx = (p.sx + Math.sin(T * 1000 * p.fx + p.ph) * p.ax) * w
+        const cx = (((p.sx + current + Math.sin(T * 1000 * p.fx + p.ph) * p.ax) % 1.3) - 0.15) * w
         const cy = (p.sy + Math.cos(T * 820 * p.fy + p.ph * 1.7) * p.ay) * h
         const rad = p.r * Math.max(w, h)
         const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad)
