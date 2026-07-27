@@ -177,7 +177,7 @@
   white-space: nowrap;
   z-index: 3;
 }
-.chip3d--1 { top: 6%; left: -6%; }
+.chip3d--1 { top: 15%; left: -6%; }
 .chip3d--2 { top: 38%; right: -8%; }
 .chip3d--3 { bottom: 10%; left: -2%; }
 .chip3d__ico {

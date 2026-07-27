@@ -90,10 +90,10 @@ body::before {
   inset: 0;
   z-index: -3;
   background:
-    radial-gradient(58vw 58vw at 14% -6%, rgba(99, 102, 241, 0.13), transparent 62%),
-    radial-gradient(52vw 52vw at 92% 4%, rgba(34, 211, 238, 0.08), transparent 58%),
-    radial-gradient(70vw 46vw at 50% 112%, rgba(129, 140, 248, 0.09), transparent 62%),
-    linear-gradient(180deg, #05070d 0%, var(--ink-0) 40%, #04050a 100%);
+    radial-gradient(58vw 58vw at 14% -6%, rgba(45, 212, 191, 0.1), transparent 62%),
+    radial-gradient(52vw 52vw at 92% 4%, rgba(56, 189, 248, 0.1), transparent 58%),
+    radial-gradient(70vw 46vw at 50% 112%, rgba(34, 211, 238, 0.08), transparent 62%),
+    linear-gradient(180deg, #04080d 0%, var(--ink-0) 40%, #03060a 100%);
 }
 
 /* ---- Film-grain noise (data-URI turbulence) ---- */
@@ -389,4 +389,13 @@ ul { list-style: none; }
   .field textarea { font-size: 16px; }
   .btn { padding: 15px 26px; }
   .faq__q { min-height: 56px; }
+}
+
+
+/* ---- Small screens: lighter glass blur for faster paint ---- */
+@media (max-width: 640px) {
+  .nav__inner, .mobile-menu { backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%); }
+  .card, .cta-band, .xp-vmodel__stage, .xp-twin__panel { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .chip3d, .hero__meta-item, .info-row, .eyebrow, .tag { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  body::after { opacity: 0.035; }  /* lighter film grain on phones */
 }
