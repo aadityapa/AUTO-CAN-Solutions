@@ -44,6 +44,37 @@
 .blob--blue { background: radial-gradient(circle, rgba(99, 102, 241, 0.28), transparent 65%); }
 .blob--orange { background: radial-gradient(circle, rgba(34, 211, 238, 0.2), transparent 65%); }
 
+/* ============================================================
+   Hero entrance — CSS, not JS.
+   These elements are the page's LCP candidates. Driving the entrance from
+   the stylesheet means they paint on the first frame after CSS arrives,
+   instead of waiting for React to hydrate before becoming visible.
+   ============================================================ */
+@keyframes acHeroIn {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes acHeroWord {
+  from { opacity: 0; transform: translate3d(0, 0.42em, 0) rotateX(-58deg); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-in {
+  animation: acHeroIn 0.7s var(--ease-lux) both;
+}
+.anim-head { perspective: 800px; }
+.anim-head__w {
+  display: inline-block;
+  transform-origin: bottom;
+  margin-right: 0.28em;
+  animation: acHeroWord 0.7s var(--ease-lux) both;
+}
+/* No entrance for people who asked for less motion — just show the content. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-in, .anim-head__w { animation: none !important; opacity: 1; transform: none; }
+}
+
+.hero__copy { min-width: 0; }
+
 .hero__inner {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
@@ -69,6 +100,9 @@
 }
 
 .hero__actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 34px; }
+@media (max-width: 520px) {
+  .boot-console { font-size: 11px; letter-spacing: 0; }
+}
 
 .hero__meta {
   display: flex;
@@ -134,7 +168,11 @@
   position: relative;
   border-radius: 26px;
   overflow: visible;
+  /* Reserve the exact final box so the lazily-mounted scene causes no shift. */
+  aspect-ratio: 10 / 8.4;
 }
+.scene3d__frame > .scene3d,
+.scene3d__frame > .scene3d--loading { height: 100%; }
 .scene3d {
   width: 100%;
   aspect-ratio: 10 / 8.4;
@@ -228,12 +266,18 @@
 
 /* Boot console */
 .boot-console {
+  /* Locked to exactly one line: the six rotating messages differ in length, and
+     letting them wrap would reflow the buttons below on every cycle. Clipping
+     also reads correctly — a terminal truncates, it doesn't wrap. */
+  min-height: 1.7em;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
   margin-top: 26px;
   font-family: var(--font-mono);
   font-size: 12.5px;
   color: var(--cyan-300);
   opacity: 0.85;
-  min-height: 20px;
   letter-spacing: 0.02em;
 }
 .boot-console__cursor {
@@ -249,6 +293,8 @@
 /* ============================================================
    MARQUEE
    ============================================================ */
+.faq__qwrap { margin: 0; font: inherit; font-weight: inherit; }
+
 .marquee {
   position: relative;
   overflow: hidden;
@@ -643,7 +689,7 @@
   color: var(--text-faint);
 }
 .info-row .v { font-size: 0.95rem; margin-top: 3px; }
-.info-row .v a { color: var(--cyan-300); }
+.info-row .v a { color: var(--cyan-300); display: inline-flex; align-items: center; min-height: 26px; }
 .info-row .v a:hover { text-decoration: underline; }
 
 /* ---------- Luxury form ---------- */
@@ -689,14 +735,100 @@
   box-shadow: var(--rim), 0 0 0 4px rgba(34, 211, 238, 0.09), 0 0 24px rgba(34, 211, 238, 0.12);
 }
 .field textarea { min-height: 130px; resize: vertical; }
+
+/* Native select needs an explicit arrow once the OS chrome is overridden */
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%237b87a3' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+}
+.field select option { background: var(--ink-2); color: var(--text); }
+
+/* ---- Required / optional affordances ---- */
+.field__req { color: var(--cyan-400); margin-left: 2px; }
+.field__opt {
+  margin-left: 6px;
+  letter-spacing: 0.12em;
+  color: rgba(123, 135, 163, 0.75);
+  text-transform: none;
+}
+
+/* ---- Invalid state ---- */
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'],
+.field textarea[aria-invalid='true'] {
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+.field input[aria-invalid='true']:focus,
+.field select[aria-invalid='true']:focus,
+.field textarea[aria-invalid='true']:focus {
+  box-shadow: var(--rim), 0 0 0 4px rgba(248, 113, 113, 0.14);
+}
+.field:focus-within:has([aria-invalid='true']) label { color: var(--danger); }
+
+.field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  color: var(--danger);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.field__error svg { flex: 0 0 auto; margin-top: 2px; }
+
+/* ---- Honeypot: hidden from people and from assistive tech ---- */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- Submit + status ---- */
+.form__submit { align-self: flex-start; }
+.form__note {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  margin-top: -6px;
+}
+.form__note a { color: var(--cyan-300); text-decoration: underline; text-underline-offset: 3px; }
+.form__status:empty { display: none; }
+.form__status {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.form__status--error { color: var(--danger); display: block; }
+
+.contact-card { padding: clamp(22px, 3vw, 32px); }
+
+/* ---- Success ---- */
 .form-success {
   color: var(--text-dim);
-  background: rgba(34, 211, 238, 0.06);
+  background: linear-gradient(160deg, rgba(94, 234, 212, 0.08), rgba(34, 211, 238, 0.04));
   border: 1px solid rgba(103, 232, 249, 0.3);
   border-radius: var(--radius-sm);
-  padding: 26px;
+  padding: clamp(22px, 3vw, 30px);
 }
-.form-success strong { color: var(--cyan-300); }
+.form-success:focus { outline: none; }
+.form-success:focus-visible { outline: 2px solid var(--cyan-400); outline-offset: 4px; }
+.form-success strong { display: block; color: var(--cyan-300); font-size: 1.05rem; margin-top: 14px; }
+.form-success p { margin-top: 8px; }
+.form-success__mark {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  color: var(--ok);
+  background: var(--ok-soft);
+  border: 1px solid rgba(94, 234, 212, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
 
 /* ============================================================
    404
@@ -960,7 +1092,28 @@
   stroke-linecap: round;
   fill: none;
 }
-.nf-broken { cursor: pointer; outline-offset: 6px; }
+.nf-broken { pointer-events: none; }
+
+/* The reconnect control sits exactly over the broken node in the diagram. */
+.nf-art { position: relative; }
+.nf-art__reconnect {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  transform: translate(-50%, -50%);
+  width: 64px; height: 64px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.nf-art__reconnect:focus-visible {
+  outline: 2px solid var(--cyan-400);
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .nf-art__reconnect:hover { background: radial-gradient(circle, rgba(34, 211, 238, 0.12), transparent 70%); }
+}
 .nf-broken__node {
   fill: rgba(11, 16, 29, 0.9);
   stroke: rgba(255, 176, 102, 0.7);
@@ -1293,3 +1446,16 @@
   .statstrip { display: none; }          /* keep mobile clean */
   .camtag { bottom: 10px; left: 12px; font-size: 9px; }
 }
+
+/* ============================================================
+   Mobile drawer scrim — dims and captures clicks behind the menu
+   ============================================================ */
+.nav__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  background: rgba(2, 4, 10, 0.6);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+@media (min-width: 901px) { .nav__scrim { display: none; } }
