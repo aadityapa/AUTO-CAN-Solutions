@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Component, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ShieldIcon, BoltIcon, GlobeIcon } from './Icons'
+import useVisibleInterval from './useVisibleInterval'
 const HeroScene3D = lazy(() => import('./HeroScene3D'))
 
 export const SPEC_STACK = [
@@ -10,12 +11,14 @@ export const SPEC_STACK = [
 ]
 export function CycleCard({ items, interval, className, icon, floatDur }) {
   const [i, setI] = useState(0)
-  useEffect(() => {
-    const id = setInterval(() => setI((v) => (v + 1) % items.length), interval)
-    return () => clearInterval(id)
-  }, [items.length, interval])
+  useVisibleInterval(() => setI((v) => (v + 1) % items.length), interval)
   return (
-    <motion.div className={`chip3d ${className}`} animate={{ y: [0, -10, 0] }} transition={{ duration: floatDur, repeat: Infinity, ease: 'easeInOut' }}>
+    <motion.div
+      className={`chip3d ${className}`}
+      aria-hidden="true"
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: floatDur, repeat: Infinity, ease: 'easeInOut' }}
+    >
       {icon}
       <motion.span key={i} className="chip3d__label" initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
         <b>{items[i]}</b>
@@ -33,7 +36,10 @@ export const BOOT_LINES = [
 ]
 export function BootConsole() {
   const [line, setLine] = useState(0)
-  const [chars, setChars] = useState(0)
+  // Start fully typed: the prerendered HTML then contains the real line, so the
+  // block has its final height at first paint instead of growing from 0 and
+  // shoving the buttons below it down (that shift was worth 0.12 CLS).
+  const [chars, setChars] = useState(BOOT_LINES[0].length)
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setChars(BOOT_LINES[0].length); return }
     const id = setInterval(() => {
@@ -46,9 +52,9 @@ export function BootConsole() {
     return () => { clearInterval(id); clearTimeout(hold) }
   }, [line])
   return (
-    <motion.div className="boot-console" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.35 }} aria-hidden="true">
+    <div className="boot-console hero-in" style={{ animationDelay: '0.4s' }} aria-hidden="true">
       {BOOT_LINES[line].slice(0, chars)}<span className="boot-console__cursor" />
-    </motion.div>
+    </div>
   )
 }
 export function XRayButton() {
@@ -59,8 +65,8 @@ export function XRayButton() {
     window.dispatchEvent(new CustomEvent('ac-xray', { detail: next }))
   }
   return (
-    <button className={`xray-btn ${on ? 'is-on' : ''}`} onClick={toggle} aria-pressed={on}>
-      <span className="xray-btn__dot" />
+    <button type="button" className={`xray-btn ${on ? 'is-on' : ''}`} onClick={toggle} aria-pressed={on}>
+      <span className="xray-btn__dot" aria-hidden="true" />
       {on ? 'Exit X-Ray' : 'Digital Twin X-Ray'}
     </button>
   )
@@ -76,11 +82,7 @@ const WHUD_LINES = [
 ]
 export function WorkshopHUD() {
   const [i, setI] = useState(0)
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = setInterval(() => setI((v) => (v + 1) % WHUD_LINES.length), 2600)
-    return () => clearInterval(id)
-  }, [])
+  useVisibleInterval(() => setI((v) => (v + 1) % WHUD_LINES.length), 2600, { pauseOnReducedMotion: true })
   return (
     <div className="whud" aria-hidden="true">
       <span className="whud__dot" />
@@ -103,7 +105,7 @@ function HeroFallback() {
     <div className="scene3d scene3d--fallback" role="img" aria-label="AUTO-CAN digital-twin engineering visualization">
       <picture>
         <source srcSet="/hero-graphic.webp" type="image/webp" />
-        <img src="/hero-graphic.png" alt="" width="900" height="569" loading="eager" decoding="async" />
+        <img src="/hero-graphic.png" alt="" width="900" height="569" loading="eager" decoding="async" fetchpriority="high" />
       </picture>
     </div>
   )
@@ -120,12 +122,9 @@ class HeroErrorBoundary extends Component {
 // Live camera tag — monitoring-console cue with a real ticking clock.
 export function CamTag() {
   const [now, setNow] = useState('')
-  useEffect(() => {
-    const tick = () => setNow(new Date().toLocaleTimeString('en-GB', { hour12: false }))
-    tick()
-    const id = setInterval(tick, 1000)
-    return () => clearInterval(id)
-  }, [])
+  const tick = () => setNow(new Date().toLocaleTimeString('en-GB', { hour12: false }))
+  useEffect(() => { tick() }, [])
+  useVisibleInterval(tick, 1000)
   return (
     <div className="camtag" aria-hidden="true">
       <span className="camtag__dot" />

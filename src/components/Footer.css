@@ -70,7 +70,7 @@
 }
 .footer__muted { color: var(--text-faint); font-size: 0.9rem; line-height: 1.8; }
 
-.footer__col h4 {
+.footer__col h3 {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -97,6 +97,20 @@
   font-size: 0.85rem;
 }
 .footer__mono { font-family: var(--font-mono); letter-spacing: 0.06em; }
+
+/* Legal links are standalone controls, not inline prose — give them a real
+   hit area (WCAG 2.5.8 Target Size, 24x24 minimum). */
+.footer__legal { display: flex; flex-wrap: wrap; gap: 4px 18px; justify-content: center; }
+.footer__legal a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  color: var(--text-faint);
+  transition: color 0.2s ease;
+}
+.footer__legal a:hover { color: var(--cyan-300); }
 
 @media (max-width: 860px) {
   .footer__grid { grid-template-columns: 1fr 1fr; gap: 30px; }

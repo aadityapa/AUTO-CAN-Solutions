@@ -21,7 +21,7 @@ export default function Footer() {
             <p className="footer__ctatext">Same-day deployment · 25–45% buffer bench · a decade of delivery.</p>
           </div>
           <Link to="/contact" className="btn btn-primary footer__ctabtn">
-            Start a conversation <span className="arrow">→</span>
+            Start a conversation <span className="arrow" aria-hidden="true">→</span>
           </Link>
         </motion.div>
 
@@ -39,14 +39,14 @@ export default function Footer() {
           </div>
 
           <div className="footer__col">
-            <h4>Navigate</h4>
+            <h3>Navigate</h3>
             {navLinks.map((l) => (
               <Link key={l.to} to={l.to}>{l.label}</Link>
             ))}
           </div>
 
           <div className="footer__col">
-            <h4>Capabilities</h4>
+            <h3>Capabilities</h3>
             <Link to="/services">Embedded SW Stacks</Link>
             <Link to="/services">Test Automation</Link>
             <Link to="/expertise">HiL &amp; V&amp;V</Link>
@@ -54,7 +54,7 @@ export default function Footer() {
           </div>
 
           <div className="footer__col">
-            <h4>Engage</h4>
+            <h3>Engage</h3>
             <Link to="/careers">ODC Model</Link>
             <Link to="/careers">Deputation Model</Link>
             <Link to="/careers">Campus Connect</Link>

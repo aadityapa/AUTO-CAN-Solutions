@@ -4,8 +4,10 @@
   transition: border-color 0.3s ease;
 }
 .faq__item.is-open { border-bottom-color: rgba(103, 232, 249, 0.35); }
+.faq__qwrap { margin: 0; font: inherit; }
 .faq__q {
   width: 100%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,3 +31,6 @@
 .faq__a { overflow: hidden; }
 .faq__item.is-open .faq__icon { color: var(--cyan-300); }
 .faq__a p { padding: 0 8px 24px; color: var(--text-dim); margin: 0; max-width: 68ch; }
+.faq__q:focus-visible { outline: 2px solid var(--cyan-400); outline-offset: -2px; border-radius: 10px; }
+.faq__q:hover { color: var(--cyan-300); }
+.faq__q:hover .faq__icon { color: var(--cyan-300); }

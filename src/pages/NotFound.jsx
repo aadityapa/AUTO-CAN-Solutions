@@ -8,8 +8,13 @@ export default function NotFound() {
   return (
     <Page>
       <Head>
+        <html lang="en" />
         <title>Signal Lost — Page Not Found | AUTO-CAN Solutions</title>
+        <meta name="description" content="This route isn’t on the network. Head back to AUTO-CAN Solutions — automotive embedded software, HiL testing, AUTOSAR and ADAS engineering." />
         <meta name="robots" content="noindex, nofollow" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="AUTO-CAN Solutions" />
+        <meta property="og:title" content="Signal Lost — Page Not Found | AUTO-CAN Solutions" />
       </Head>
       <div className="container nf">
         <NotFoundArt />
@@ -18,7 +23,7 @@ export default function NotFound() {
           The page you’re looking for may have moved, changed, or no longer exists.
         </p>
         <div className="nf__actions">
-          <Link to="/" className="btn btn-primary">Return home <span className="arrow">→</span></Link>
+          <Link to="/" className="btn btn-primary">Return home <span className="arrow" aria-hidden="true">→</span></Link>
           <Link to="/services" className="btn btn-ghost">Explore services</Link>
           <button className="btn btn-ghost" onClick={() => navigate(-1)}>Go back</button>
         </div>

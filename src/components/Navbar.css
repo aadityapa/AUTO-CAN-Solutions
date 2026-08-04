@@ -1,6 +1,15 @@
 /* ============================================================
    Navbar — floating liquid-glass dock
    ============================================================ */
+@keyframes acNavIn {
+  from { transform: translate3d(0, -70px, 0); }
+  to   { transform: none; }
+}
+.nav--enter { animation: acNavIn 0.55s var(--ease-lux) both; }
+@media (prefers-reduced-motion: reduce) {
+  .nav--enter { animation: none; }
+}
+
 .nav {
   position: fixed;
   top: max(14px, env(safe-area-inset-top)); left: 0; right: 0;
