@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js'
 
 /**
@@ -924,7 +923,7 @@ export default function HeroScene3D() {
     gauge.add(ga1, ga2)
 
     // ---- car + robot ----
-    const { car, wheels, under, headlights, tailBarRef, paint, xrayEdges, glassMat, beams, beamPool } = buildCar(glowTex)
+    const { car, under, headlights, tailBarRef, paint, xrayEdges, glassMat, beams, beamPool } = buildCar(glowTex)
     car.position.x = 0.75
     world.add(car)
 
@@ -1427,7 +1426,7 @@ export default function HeroScene3D() {
       renderer.dispose()
       el.removeChild(renderer.domElement)
     }
-    } catch (err) {
+    } catch {
       // any scene-init failure → graceful poster fallback, never a black panel
       window.dispatchEvent(new CustomEvent('ac-webgl-failed'))
     }

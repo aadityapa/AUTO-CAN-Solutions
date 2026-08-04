@@ -127,7 +127,7 @@ export function HardwareDiagram() {
       <rect x="126" y="47" width="68" height="56" rx="8" className="sdg-panel sdg-panel--deep" />
       <text x="160" y="72" textAnchor="middle" className="sdg-lbl">MCU</text>
       <text x="160" y="86" textAnchor="middle" className="sdg-lbl sdg-lbl--side">32-BIT</text>
-      {pads.map(([label, tx, ty, px2, py2]) => (
+      {pads.map(([label, tx, ty, _px2, py2]) => (
         <g key={label + ty}>
           <line x1={tx < 160 ? 96 : 224} y1={py2} x2={tx < 160 ? 126 : 194} y2={py2 === 40 ? 55 : py2 === 110 ? 95 : 75} className="sdg-ln" />
           <circle cx={tx < 160 ? 96 : 224} cy={py2} r="3.4" className="sdg-node" />
