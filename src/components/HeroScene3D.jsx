@@ -278,7 +278,7 @@ function buildCar(tex) {
 
   // crystal laser-LED headlights: chrome internals + blue projectors under a glass cover
   const chromeMat = new THREE.MeshStandardMaterial({ color: 0xe7edf6, metalness: 1, roughness: 0.08 })
-  const projMat = new THREE.MeshStandardMaterial({ color: 0x9cc6ff, emissive: 0x7db4ff, emissiveIntensity: 4, roughness: 0.1 })
+  const projMat = new THREE.MeshStandardMaterial({ color: 0x9cc6ff, emissive: 0x7db4ff, emissiveIntensity: 1.4, roughness: 0.1 })
   for (const z of [0.44, -0.44]) {
     const cluster = new THREE.Group()
     cluster.position.set(2.46, 0.54, z)
@@ -396,18 +396,18 @@ function buildCar(tex) {
   shadow.scale.set(5.8, 1.7, 1)
   shadow.position.set(0, 0.04, 0)
   car.add(shadow)
-  const under = glowSprite(tex, 0x7db4ff, 5.4, 1.3, 0.6)
+  const under = glowSprite(tex, 0x7db4ff, 4.2, 1.0, 0.32)
   under.position.set(0, 0.09, 0)
   car.add(under)
 
-  const headL = glowSprite(tex, 0xbcd8ff, 0.62, 0.62, 0.95); headL.position.set(2.7, 0.5, 0.46)
-  const headR = glowSprite(tex, 0xbcd8ff, 0.62, 0.62, 0.95); headR.position.set(2.7, 0.5, -0.46)
+  const headL = glowSprite(tex, 0xbcd8ff, 0.34, 0.34, 0.45); headL.position.set(2.7, 0.5, 0.46)
+  const headR = glowSprite(tex, 0xbcd8ff, 0.34, 0.34, 0.45); headR.position.set(2.7, 0.5, -0.46)
   const tailG = glowSprite(tex, 0xff5533, 1.6, 0.3, 0.5); tailG.position.set(-2.6, 0.62, 0)
   car.add(headL, headR, tailG)
 
   // volumetric headlight beams + light pool thrown on the floor
   const beamMat = new THREE.MeshBasicMaterial({
-    color: 0xe9f3ff, transparent: true, opacity: 0.26,
+    color: 0xe9f3ff, transparent: true, opacity: 0.06,
     blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
   })
   const beams = []
@@ -419,7 +419,7 @@ function buildCar(tex) {
     car.add(beam)
     beams.push(beam)
   }
-  const beamPool = glowSprite(tex, 0xe9f3ff, 4.8, 1.7, 0.44)
+  const beamPool = glowSprite(tex, 0xe9f3ff, 2.2, 0.8, 0.1)
   beamPool.position.set(4.7, 0.07, 0)
   car.add(beamPool)
 
@@ -1255,16 +1255,15 @@ export default function HeroScene3D() {
 
       // vehicle breathing
       car.position.y = Math.sin(t * 0.9) * 0.018
-      under.material.opacity = 0.42 + Math.sin(t * 2) * 0.08
-      const hl = 0.65 + Math.abs(Math.sin(t * 1.3)) * 0.35
-      headlights[0].material.opacity = hl
-      headlights[1].material.opacity = hl
-      // headlight beams breathe with the lamps (brighter throw)
-      beams[0].material.opacity = 0.2 + hl * 0.18
-      beams[1].material.opacity = 0.2 + hl * 0.18
-      beamPool.material.opacity = 0.28 + hl * 0.24
-      // sequential taillight sweep
-      tailBarRef.material.emissiveIntensity = 2.2 + ((t * 1.4) % 1) * 1.6
+      // Lights are STEADY (no pulsing/blinking) and softly dimmed, like a real
+      // car parked under studio lighting rather than headlights on full beam.
+      under.material.opacity = 0.3
+      headlights[0].material.opacity = 0.42
+      headlights[1].material.opacity = 0.42
+      beams[0].material.opacity = 0.05
+      beams[1].material.opacity = 0.05
+      beamPool.material.opacity = 0.08
+      tailBarRef.material.emissiveIntensity = 2.0
 
       // holo rings
       ringGroup.rotation.z = t * 0.18
@@ -1297,10 +1296,10 @@ export default function HeroScene3D() {
       }
       // trolley status LEDs blink
       for (let i = 0; i < trolleyDots.length; i++) {
-        trolleyDots[i].material.emissiveIntensity = 1 + Math.abs(Math.sin(t * 3 + i * 2.1)) * 2
+        trolleyDots[i].material.emissiveIntensity = 1.8
       }
-      cDot1.material.opacity = 0.55 + Math.abs(Math.sin(t * 2)) * 0.45
-      cDot2.material.opacity = 0.55 + Math.abs(Math.sin(t * 2 + 1.5)) * 0.45
+      cDot1.material.opacity = 0.8
+      cDot2.material.opacity = 0.8
       blueprint.position.y = Math.sin(t * 0.7) * 0.03
 
       // light sweep: pass every ~7s
@@ -1337,12 +1336,12 @@ export default function HeroScene3D() {
         laser.material.opacity = 0
         laserLine.material.opacity = 0
       }
-      const flick = working ? (0.5 + Math.random() * 0.5) : 0.06
+      const flick = working ? (0.42 + Math.abs(Math.sin(t * 7)) * 0.22) : 0.05
       spark.material.opacity = flick
       const ssc = 0.2 + flick * 0.2
       spark.scale.set(ssc, ssc, 1)
       weldLight.position.set(tip.x, tip.y, 0.8)
-      weldLight.intensity = working ? 8 + Math.random() * 20 : 0.4
+      weldLight.intensity = working ? 9 + Math.abs(Math.sin(t * 6)) * 5 : 0.4
 
       const arr2 = sparks.geometry.attributes.position.array
       for (let i = 0; i < S_COUNT; i++) {

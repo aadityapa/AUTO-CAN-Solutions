@@ -155,9 +155,7 @@
   border-radius: 26px;
   background: var(--glass);
   border: 1px solid var(--border);
-  animation: acSkeleton 1.6s ease-in-out infinite alternate;
 }
-@keyframes acSkeleton { from { opacity: 0.5; } to { opacity: 1; } }
 
 /* Floating spec chips over the 3D scene */
 .chip3d {
@@ -240,14 +238,13 @@
 }
 .boot-console__cursor {
   display: inline-block;
+  opacity: 0.85;
   width: 7px; height: 14px;
   margin-left: 3px;
   background: var(--cyan-400);
   vertical-align: -2px;
-  animation: acBlink 1s steps(2) infinite;
   box-shadow: 0 0 8px var(--cyan-400);
 }
-@keyframes acBlink { 50% { opacity: 0; } }
 
 /* ============================================================
    MARQUEE
@@ -803,8 +800,8 @@
 .xp-twin__stream span:nth-child(4) { animation-delay: 0.6s; }
 .xp-twin__stream span:nth-child(5) { animation-delay: 0.8s; }
 @keyframes acStream {
-  0%, 100% { opacity: 0.15; transform: scaleY(0.6); }
-  50% { opacity: 1; transform: scaleY(1); }
+  0%, 100% { opacity: 0.55; transform: scaleY(0.85); }
+  50% { opacity: 0.85; transform: scaleY(1); }
 }
 
 .xp-twin__stats {
@@ -1199,39 +1196,13 @@
   100% { left: 100%; }
 }
 
-/* active scan sweep across the whole scene panel */
-.scene-scan {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: 26px;
-  overflow: hidden;
-  pointer-events: none;
-}
-.scene-scan::before {
-  content: '';
-  position: absolute;
-  left: 0; right: 0;
-  height: 40%;
-  top: -40%;
-  background: linear-gradient(180deg, transparent, rgba(103, 232, 249, 0.06) 60%, rgba(103, 232, 249, 0.12));
-  animation: sceneScan 6.5s linear infinite;
-}
-@keyframes sceneScan {
-  0% { transform: translateY(0); opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { transform: translateY(360%); opacity: 0; }
-}
-
 @media (max-width: 620px) {
   .whud__status { min-width: 0; }
   .whud { font-size: 9px; gap: 7px; padding: 7px 11px; }
   .whud__cell, .whud__bar { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .whud__dot, .whud__fill, .scene-scan::before { animation: none; }
-  .scene-scan::before { display: none; }
+  .whud__fill { animation: none; }
 }
 
 /* Photoreal hero media (video / image) — fills the scene panel */
