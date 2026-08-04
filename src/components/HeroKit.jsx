@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Component, lazy, Suspense, useEffect, useState } from 'react'
+import { Component, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ShieldIcon, BoltIcon, GlobeIcon } from './Icons'
 const HeroScene3D = lazy(() => import('./HeroScene3D'))
 
@@ -101,7 +101,10 @@ export function WorkshopHUD() {
 function HeroFallback() {
   return (
     <div className="scene3d scene3d--fallback" role="img" aria-label="AUTO-CAN digital-twin engineering visualization">
-      <img src="/hero-graphic.png" alt="" width="1000" height="840" loading="eager" decoding="async" />
+      <picture>
+        <source srcSet="/hero-graphic.webp" type="image/webp" />
+        <img src="/hero-graphic.png" alt="" width="900" height="569" loading="eager" decoding="async" />
+      </picture>
     </div>
   )
 }
@@ -157,16 +160,32 @@ function hasWebGL() {
 export function HeroVisual() {
   const [ready, setReady] = useState(false)
   const [webgl, setWebgl] = useState(true)
+  const frameRef = useRef(null)
   useEffect(() => {
     setWebgl(hasWebGL())
-    setReady(true)
     const onFail = () => setWebgl(false)
     window.addEventListener('ac-webgl-failed', onFail)
-    return () => window.removeEventListener('ac-webgl-failed', onFail)
+
+    // Defer the 576 KB three.js chunk until the hero is in view and the main
+    // thread is idle — keeps first paint and interactivity fast.
+    let idle
+    const start = () => {
+      const cb = () => setReady(true)
+      idle = window.requestIdleCallback ? requestIdleCallback(cb, { timeout: 1200 }) : setTimeout(cb, 200)
+    }
+    const el = frameRef.current
+    if (!el || !('IntersectionObserver' in window)) { start(); return () => window.removeEventListener('ac-webgl-failed', onFail) }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { start(); io.disconnect() } }, { rootMargin: '200px' })
+    io.observe(el)
+    return () => {
+      io.disconnect()
+      if (idle) (window.cancelIdleCallback ? cancelIdleCallback(idle) : clearTimeout(idle))
+      window.removeEventListener('ac-webgl-failed', onFail)
+    }
   }, [])
   return (
     <div className="hero__visual hero__visual--3d">
-      <motion.div className="scene3d__frame" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
+      <motion.div ref={frameRef} className="scene3d__frame" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
         {ready && !webgl && <HeroFallback />}
         {ready && webgl && (
           <HeroErrorBoundary>

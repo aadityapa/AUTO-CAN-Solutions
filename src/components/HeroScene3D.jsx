@@ -579,7 +579,27 @@ export default function HeroScene3D() {
     el.appendChild(renderer.domElement)
 
     const pmrem = new THREE.PMREMGenerator(renderer)
-    const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+    // Automotive-studio environment: long white softbox strips over a dark
+    // room — this is what gives real car photography its crisp reflections.
+    const studio = new THREE.Scene()
+    studio.background = new THREE.Color(0x0a0d14)
+    const soft = (wd, hg, x, y, z, ry, intensity) => {
+      const m = new THREE.Mesh(
+        new THREE.PlaneGeometry(wd, hg),
+        new THREE.MeshBasicMaterial({ color: new THREE.Color(intensity, intensity, intensity) })
+      )
+      m.position.set(x, y, z); m.rotation.y = ry; m.lookAt(0, 0, 0)
+      studio.add(m)
+    }
+    soft(14, 2.2, 0, 8, 0, 0, 9)        // long ceiling strip (the classic beltline highlight)
+    soft(8, 1.4, -9, 4, 3, 0, 4)        // left softbox
+    soft(8, 1.4, 9, 4, -3, 0, 3.2)      // right softbox
+    soft(5, 1.0, 0, 3, -9, 0, 2.2)      // back accent
+    const cyanCard = new THREE.Mesh(new THREE.PlaneGeometry(6, 1), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.4, 1.6, 2.0) }))
+    cyanCard.position.set(-6, 1.4, 6); cyanCard.lookAt(0, 0.6, 0)
+    studio.add(cyanCard)                 // subtle cool kicker in the paint
+    const envTex = pmrem.fromScene(studio, 0.03).texture
+    studio.traverse((o) => { if (o.geometry) o.geometry.dispose() })
     scene.environment = envTex
 
     const glowTex = makeGlowTexture()
@@ -933,25 +953,39 @@ export default function HeroScene3D() {
         m.position.y -= box3.min.y
         m.position.x -= (box3.min.x + box3.max.x) / 2
         m.position.z -= (box3.min.z + box3.max.z) / 2
-        // Realism pass: crisp studio reflections + glossy clearcoat car paint.
+        // Realism pass keyed by material name — real car paint colour,
+        // proper glass, chrome trim, matte tires. Solid from every angle.
         m.traverse((o) => {
           if (!o.isMesh || !o.material) return
           const mats = Array.isArray(o.material) ? o.material : [o.material]
           o.material = mats.map((mat) => {
-            mat.envMapIntensity = 1.7
-            // Body panels (painted/metal, not glass) get a wet clearcoat sheen.
-            const isGlass = mat.transparent && mat.opacity < 0.9
-            if (!isGlass && 'metalness' in mat && mat.metalness >= 0.35 && mat.clearcoat === undefined) {
-              const phys = new THREE.MeshPhysicalMaterial()
-              phys.copy(mat)
-              phys.clearcoat = 1
-              phys.clearcoatRoughness = 0.12
-              phys.envMapIntensity = 1.9
-              phys.roughness = Math.max(0.08, mat.roughness * 0.7)
-              return phys
+            const n = (mat.name || '').toLowerCase()
+            if (n.includes('glass')) {
+              return new THREE.MeshPhysicalMaterial({
+                color: 0x0d1826, metalness: 0.1, roughness: 0.05,
+                transparent: true, opacity: 0.42, depthWrite: false,
+                envMapIntensity: 2.0, side: THREE.FrontSide,
+              })
             }
-            mat.needsUpdate = true
-            return mat
+            if (n.includes('paint') || n.includes('body')) {
+              return new THREE.MeshPhysicalMaterial({
+                color: 0x1c4f9e,                 // rich royal-blue metallic (brand)
+                metalness: 0.88, roughness: 0.24,
+                clearcoat: 1, clearcoatRoughness: 0.08,
+                envMapIntensity: 1.6, side: THREE.DoubleSide,
+              })
+            }
+            if (n.includes('tire') || n.includes('tyre')) {
+              return new THREE.MeshStandardMaterial({
+                color: 0x14171c, metalness: 0.05, roughness: 0.88,
+                envMapIntensity: 0.5, side: THREE.DoubleSide,
+              })
+            }
+            // trim / everything else: bright polished metal
+            return new THREE.MeshStandardMaterial({
+              color: 0xdfe6ef, metalness: 1, roughness: 0.14,
+              envMapIntensity: 1.8, side: THREE.DoubleSide,
+            })
           })
           o.material = Array.isArray(o.material) && o.material.length === 1 ? o.material[0] : o.material
         })
@@ -960,6 +994,19 @@ export default function HeroScene3D() {
           if (!(ch instanceof THREE.Sprite) && !ch.userData.keep) ch.visible = false
         }
         car.add(m)
+        // dark cabin fill — a small ellipsoid that tapers with the body, so
+        // the car reads solid through the glass without poking outside panels
+        {
+          const mb = new THREE.Box3().setFromObject(m)
+          const ms = mb.getSize(new THREE.Vector3())
+          const inner = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 18, 12),
+            new THREE.MeshStandardMaterial({ color: 0x0a0d13, roughness: 0.92, metalness: 0.1 })
+          )
+          inner.scale.set(ms.x * 0.27, ms.y * 0.22, ms.z * 0.27)
+          inner.position.set(-ms.x * 0.03, ms.y * 0.36, 0)
+          car.add(inner)
+        }
         loadedModel = m
       }, undefined, () => { /* model unavailable — keep procedural car */ })
 
