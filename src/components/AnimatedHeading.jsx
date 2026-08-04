@@ -1,44 +1,32 @@
-import { motion } from 'framer-motion'
-
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.1 } },
-}
-const word = {
-  hidden: { opacity: 0, y: '0.5em', rotateX: -60 },
-  show: {
-    opacity: 1,
-    y: '0em',
-    rotateX: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-  },
-}
-
 /**
- * Animates a heading word-by-word with a 3D flip-up.
+ * Word-by-word 3D flip-up heading.
+ *
+ * Deliberately CSS-driven rather than JS-driven: this is the LCP element on
+ * the home page, and a Framer entrance would hold it at opacity 0 until React
+ * hydrates — on a throttled phone that pushed LCP past 6s. A CSS keyframe
+ * starts painting on the very first frame the stylesheet lands, so the
+ * heading is visible immediately whether or not JS has arrived.
+ *
  * `segments` = array of { text, gradient?:bool }.
  */
-export default function AnimatedHeading({ segments, className = '' }) {
+export default function AnimatedHeading({ segments, className = '', as: Tag = 'h1' }) {
+  let index = 0
   return (
-    <motion.h1
-      className={className}
-      variants={container}
-      initial="hidden"
-      animate="show"
-      style={{ perspective: 800 }}
-    >
+    <Tag className={`${className} anim-head`}>
       {segments.map((seg, si) =>
-        seg.text.split(' ').map((wtext, wi) => (
-          <motion.span
-            key={`${si}-${wi}`}
-            variants={word}
-            className={seg.gradient ? 'gradient-text' : undefined}
-            style={{ display: 'inline-block', transformOrigin: 'bottom', marginRight: '0.28em' }}
-          >
-            {wtext}
-          </motion.span>
-        ))
+        seg.text.split(' ').map((wtext, wi) => {
+          const i = index++
+          return (
+            <span
+              key={`${si}-${wi}`}
+              className={`anim-head__w${seg.gradient ? ' gradient-text' : ''}`}
+              style={{ animationDelay: `${0.06 + i * 0.045}s` }}
+            >
+              {wtext}
+            </span>
+          )
+        })
       )}
-    </motion.h1>
+    </Tag>
   )
 }

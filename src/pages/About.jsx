@@ -13,20 +13,20 @@ export default function About() {
     <Page>
       <SEO seo={pageSeo.about} />
       <section className="page-hero"><div className="container">
-        <Reveal><span className="eyebrow">Where It Began</span></Reveal>
-        <Reveal><h1>A decade of engineering trust, <span className="gradient-text">one vertical at a time.</span></h1></Reveal>
-        <Reveal><p>Incepted in {company.location.split(',')[0]} in {company.founded} as a specialist provider of Hardware-in-the-Loop (HiL) testing, AUTO-CAN steadily broadened its capabilities across the full automotive software development lifecycle.</p></Reveal>
+        <div className="hero-in" style={{ animationDelay: '0.02s' }}><span className="eyebrow">Where It Began</span></div>
+        <div className="hero-in" style={{ animationDelay: '0.1s' }}><h1>A decade of engineering trust, <span className="gradient-text">one vertical at a time.</span></h1></div>
+        <div className="hero-in" style={{ animationDelay: '0.28s' }}><p>Incepted in {company.location.split(',')[0]} in {company.founded} as a specialist provider of Hardware-in-the-Loop (HiL) testing, AUTO-CAN steadily broadened its capabilities across the full automotive software development lifecycle.</p></div>
       </div></section>
       <section className="section" style={{ paddingTop: 30 }}><div className="container">
         <div className="split tilt-grid">
-          <Reveal>
+          <div className="hero-in" style={{ animationDelay: '0.34s' }}>
             <h2 className="section-title">Company background</h2>
             <p className="section-lead">{company.intro}</p>
             <p className="section-lead" style={{ marginTop: 16 }}>The company started as a niche player in vehicle Hardware-in-the-Loop testing — a discipline critical to validating electronic control units (ECUs) before they reach production vehicles. From this focused beginning, it built deep domain expertise along the way.</p>
-          </Reveal>
+          </div>
           <Reveal variants={scaleIn}><TiltCard className="card" intensity={12} style={{ padding: 40, textAlign: 'center' }}>
             <div className="tl-year" style={{ fontSize: '0.9rem' }}>YEAR OF INCEPTION</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(4rem,10vw,7rem)', lineHeight: 1 }} className="gradient-text"><CountUp to={2013} suffix="" duration={1800} /></div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 'clamp(4rem,10vw,7rem)', lineHeight: 1 }} className="gradient-text"><CountUp to={2013} suffix="" duration={1800} /></div>
             <p style={{ color: 'var(--text-dim)', marginTop: 10 }}>{company.location}</p>
           </TiltCard></Reveal>
         </div>
@@ -72,7 +72,7 @@ export default function About() {
         <RevealGroup className="why-list" style={{ marginTop: 30 }}>{differentiators.map((d, i) => (
           <motion.div className="why-item" key={d} variants={fadeUp}><span className="no">{String(i + 1).padStart(2, '0')}</span><p>{d}</p></motion.div>
         ))}</RevealGroup>
-        <Reveal className="center" style={{ marginTop: 46 }}><MagneticButton to="/contact" className="btn btn-primary">Partner with us <span className="arrow">→</span></MagneticButton></Reveal>
+        <Reveal className="center" style={{ marginTop: 46 }}><MagneticButton to="/contact" className="btn btn-primary">Partner with us <span className="arrow" aria-hidden="true">→</span></MagneticButton></Reveal>
       </div></section>
     </Page>
   )

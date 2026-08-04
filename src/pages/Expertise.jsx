@@ -10,9 +10,9 @@ export default function Expertise() {
     <Page>
       <SEO seo={pageSeo.expertise} />
       <section className="page-hero"><div className="container">
-        <Reveal><span className="eyebrow">Domain Expertise & Standards</span></Reveal>
-        <Reveal><h1>10+ years of <span className="gradient-text">technology depth.</span></h1></Reveal>
-        <Reveal><p>From foundational, production-proven technologies to the next-generation systems shaping connected and autonomous mobility.</p></Reveal>
+        <div className="hero-in" style={{ animationDelay: '0.02s' }}><span className="eyebrow">Domain Expertise & Standards</span></div>
+        <div className="hero-in" style={{ animationDelay: '0.1s' }}><h1>10+ years of <span className="gradient-text">technology depth.</span></h1></div>
+        <div className="hero-in" style={{ animationDelay: '0.28s' }}><p>From foundational, production-proven technologies to the next-generation systems shaping connected and autonomous mobility.</p></div>
       </div></section>
       <section className="section" style={{ paddingTop: 40 }}><div className="container">
         <div className="split tilt-grid">

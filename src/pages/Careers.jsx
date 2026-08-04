@@ -12,12 +12,18 @@ export default function Careers() {
     <Page>
       <SEO seo={pageSeo.careers} />
       <section className="page-hero"><div className="container">
-        <Reveal><span className="eyebrow">Talent · Engagement · Campus Connect</span></Reveal>
-        <Reveal><h1>Building talent, <span className="gradient-text">the AUTO-CAN way.</span></h1></Reveal>
-        <Reveal><p>Open roles across Testing, Development, and R&D — for freshers and experienced engineers alike. Structured training turns fresh talent into automotive engineers, and flexible engagement models put that talent to work on your programs.</p></Reveal>
+        <div className="hero-in" style={{ animationDelay: '0.02s' }}><span className="eyebrow">Talent · Engagement · Campus Connect</span></div>
+        <div className="hero-in" style={{ animationDelay: '0.1s' }}><h1>Building talent, <span className="gradient-text">the AUTO-CAN way.</span></h1></div>
+        <div className="hero-in" style={{ animationDelay: '0.28s' }}><p>Open roles across Testing, Development, and R&D — for freshers and experienced engineers alike. Structured training turns fresh talent into automotive engineers, and flexible engagement models put that talent to work on your programs.</p></div>
       </div></section>
       <section className="section" style={{ paddingTop: 40 }}><div className="container">
-        <SectionHeader eyebrow="Engagement Models" title='Two ways to work with <span class="gradient-text">our talent</span>' lead="Built around client convenience and talent growth." />
+        <div className="hero-in" style={{ animationDelay: '0.34s' }}>
+          <div className="section-head">
+            <span className="eyebrow">Engagement Models</span>
+            <h2 className="section-title">Two ways to work with <span className="gradient-text">our talent</span></h2>
+            <p className="section-lead">Built around client convenience and talent growth.</p>
+          </div>
+        </div>
         <div className="split tilt-grid" style={{ marginTop: 50 }}>{engagementModels.map((m) => (
           <Reveal key={m.tag}><TiltCard className="card" intensity={9} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <span className="model-tag">{m.tag}</span><h3 className="model-title">{m.title}</h3>
@@ -78,7 +84,7 @@ export default function Careers() {
           <span className="eyebrow">Industry-ready experts</span>
           <h2 style={{ marginTop: 18 }}>A talent pipeline built for automotive programs.</h2>
           <p>Fresh talent trained specifically for automotive embedded software from day one — with hands-on experience.</p>
-          <MagneticButton to="/contact" className="btn btn-primary">Talk to us about talent <span className="arrow">→</span></MagneticButton>
+          <MagneticButton to="/contact" className="btn btn-primary">Talk to us about talent <span className="arrow" aria-hidden="true">→</span></MagneticButton>
         </div></Reveal>
       </div></section>
     </Page>

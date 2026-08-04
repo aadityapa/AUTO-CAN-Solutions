@@ -2,23 +2,53 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/logo.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#04060b" />
-    <meta name="author" content="AUTO-CAN Solutions" />
+
     <title>AUTO-CAN Solutions | Automotive Embedded Software &amp; HiL Testing</title>
     <meta name="description" content="AUTO-CAN Solutions — automotive embedded software and engineering company. HiL testing, AUTOSAR, ADAS, CAN/LIN/UDS stacks, test automation and R&D for OEMs and Tier-1 suppliers." />
+    <meta name="author" content="AUTO-CAN Solutions" />
+    <meta name="theme-color" content="#04060b" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" href="/icon-192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Fonts: connect early, then load non-blocking (display=swap paints text immediately) -->
+    <!-- The brand mark is in the first viewport on every route and measures as
+         the LCP element once the text entrance is factored out. -->
+    <link rel="preload" as="image" href="/logo.png" fetchpriority="high" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fonts load non-blocking (display=swap paints text immediately) -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" /></noscript>
-    <!-- 3D assets are non-critical: fetch at low priority so they never
-         compete with the HTML/CSS/JS needed for first paint -->
-    <link rel="prefetch" href="/car.glb" as="fetch" type="model/gltf-binary" crossorigin="anonymous" />
-    <link rel="prefetch" href="/human.glb" as="fetch" type="model/gltf-binary" crossorigin="anonymous" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" /></noscript>
+
+    <!-- Metric-matched fallbacks: text renders in the system font at the exact
+         width the webfont will occupy, so the swap causes no layout shift. -->
+    <style>
+      @font-face {
+        font-family: 'Inter Fallback';
+        src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+        size-adjust: 107%; ascent-override: 90%; descent-override: 22%; line-gap-override: 0%;
+      }
+      @font-face {
+        font-family: 'Grotesk Fallback';
+        src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+        size-adjust: 105%; ascent-override: 96%; descent-override: 24%; line-gap-override: 0%;
+      }
+    </style>
+
+    <!-- The 3D models (~910 KB) are fetched by the hero scene itself, only on
+         the route that shows it and only once it scrolls into view. Prefetching
+         them here downloaded ~900 KB on every page, including pages with no 3D. -->
   </head>
   <body>
     <div id="root"></div>

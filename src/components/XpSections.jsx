@@ -124,7 +124,7 @@ export function TwinSync() {
             <span className="eyebrow">Digital Twin</span>
             <h2 className="section-title" style={{ marginTop: 20 }}>Every vehicle exists <span className="gradient-text">twice.</span></h2>
             <p className="section-lead">The physical car on the proving ground — and its digital twin in our validation environment, running the same software against a million simulated kilometres. When they agree, you ship.</p>
-            <MagneticButton to="/services" className="btn btn-ghost" style={{ marginTop: 26 }}>Explore validation <span className="arrow">→</span></MagneticButton>
+            <MagneticButton to="/services" className="btn btn-ghost" style={{ marginTop: 26 }}>Explore validation <span className="arrow" aria-hidden="true">→</span></MagneticButton>
           </Reveal>
           <Reveal>
             <div className="xp-twin__panel">

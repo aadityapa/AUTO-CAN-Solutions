@@ -27,27 +27,30 @@ export default function Home() {
       <section className="hero" ref={heroRef}>
         <div className="container">
           <motion.div className="hero__inner" style={{ y: yContent, opacity }}>
-            <div>
-              <motion.span className="eyebrow" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>{company.kicker}</motion.span>
+            {/* The hero entrance is CSS-driven on purpose — see AnimatedHeading.
+                Framer would hold this copy at opacity 0 until hydration, which
+                made the lead paragraph the LCP element at ~7s on a slow phone. */}
+            <div className="hero__copy">
+              <span className="eyebrow hero-in" style={{ animationDelay: '0.02s' }}>{company.kicker}</span>
               <AnimatedHeading className="hero__h1" segments={[{ text: 'Engineering the' }, { text: 'software', gradient: true }, { text: 'that moves the modern vehicle.' }]} />
-              <motion.p className="hero__lead" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 0.8 }}>{company.hero} From Hardware-in-the-Loop testing to AUTOSAR, ADAS and next-gen mobility — AUTO-CAN is the specialist partner behind production-ready embedded systems.</motion.p>
+              <p className="hero__lead hero-in" style={{ animationDelay: '0.14s' }}>{company.hero} From Hardware-in-the-Loop testing to AUTOSAR, ADAS and next-gen mobility — AUTO-CAN is the specialist partner behind production-ready embedded systems.</p>
               <BootConsole />
-              <motion.div className="hero__actions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.05, duration: 0.6 }}>
-                <MagneticButton to="/services" className="btn btn-primary">Explore capabilities <span className="arrow">→</span></MagneticButton>
+              <div className="hero__actions hero-in" style={{ animationDelay: '0.5s' }}>
+                <MagneticButton to="/services" className="btn btn-primary">Explore capabilities <span className="arrow" aria-hidden="true">→</span></MagneticButton>
                 <MagneticButton to="/contact" className="btn btn-ghost">Work with us</MagneticButton>
-              </motion.div>
-              <motion.div className="hero__meta" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.7 }}>
+              </div>
+              <div className="hero__meta hero-in" style={{ animationDelay: '0.62s' }}>
                 <div className="hero__meta-item"><div className="k">Since 2013</div><div className="l">Founded in Jaipur, India</div></div>
                 <div className="hero__meta-item"><div className="k">10+ yrs</div><div className="l">Automotive embedded depth</div></div>
                 <div className="hero__meta-item"><div className="k">2 Cities</div><div className="l">Jaipur · Pune</div></div>
-              </motion.div>
+              </div>
             </div>
             <HeroVisual />
           </motion.div>
         </div>
-        <motion.div className="hero__scroll" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}><span>Scroll</span><span className="line" /></motion.div>
+        <div className="hero__scroll hero-in" aria-hidden="true" style={{ animationDelay: '0.85s' }}><span>Scroll</span><span className="line" /></div>
       </section>
-      <div className="marquee">
+      <div className="marquee" aria-hidden="true">
         <motion.div className="marquee__track" animate={{ x: ['0%', '-50%'] }} transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}>{[...marqueeItems, ...marqueeItems].map((m, i) => (<span className="marquee__item" key={i}>{m}</span>))}</motion.div>
       </div>
       <section className="section-sm"><div className="container">
@@ -68,7 +71,7 @@ export default function Home() {
         <RevealGroup className="grid grid-3 tilt-grid" style={{ marginTop: 54 }}>{services.map((s) => (
           <TiltCard className="card icard" key={s.no} variants={fadeUp}><span className="card-num">{s.no}</span><h3 className="icard__title">{s.title}</h3><p className="icard__text">{s.text}</p></TiltCard>
         ))}</RevealGroup>
-        <Reveal className="center" style={{ marginTop: 46 }}><MagneticButton to="/services" className="btn btn-ghost">See all services <span className="arrow">→</span></MagneticButton></Reveal>
+        <Reveal className="center" style={{ marginTop: 46 }}><MagneticButton to="/services" className="btn btn-ghost">See all services <span className="arrow" aria-hidden="true">→</span></MagneticButton></Reveal>
       </div></section>
       <TwinSync />
       <section className="section" style={{ paddingTop: 0 }}><div className="container">
@@ -77,7 +80,7 @@ export default function Home() {
             <span className="eyebrow">The AUTO-CAN Journey</span>
             <h2 className="section-title" style={{ marginTop: 20 }}>Building capability, <span className="gradient-text">one vertical at a time.</span></h2>
             <p className="section-lead">An organic, capability-led growth model — adding one specialized vertical at a time — became the hallmark of the company’s approach and the foundation for everything that followed.</p>
-            <MagneticButton to="/about" className="btn btn-ghost" style={{ marginTop: 26 }}>Read our story <span className="arrow">→</span></MagneticButton>
+            <MagneticButton to="/about" className="btn btn-ghost" style={{ marginTop: 26 }}>Read our story <span className="arrow" aria-hidden="true">→</span></MagneticButton>
           </Reveal>
           <Reveal><div className="timeline">{timeline.map((t) => (
             <div className="tl-item" key={t.year}><span className="tl-dot" /><div className="tl-year">{t.year}</div><div className="tl-title">{t.title}</div><div className="tl-text">{t.text}</div></div>
@@ -97,7 +100,7 @@ export default function Home() {
           <span className="eyebrow">Ready when you are</span>
           <h2 style={{ marginTop: 18 }}>Let’s put a proven engineering bench behind your program.</h2>
           <p>Flexible engagement models, 25–45% buffer capacity, and a decade of proven automotive embedded delivery.</p>
-          <MagneticButton to="/contact" className="btn btn-primary" strength={0.5}>Start a conversation <span className="arrow">→</span></MagneticButton>
+          <MagneticButton to="/contact" className="btn btn-primary" strength={0.5}>Start a conversation <span className="arrow" aria-hidden="true">→</span></MagneticButton>
         </div></Reveal>
       </div></section>
     </Page>

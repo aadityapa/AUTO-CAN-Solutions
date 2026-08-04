@@ -1,6 +1,5 @@
 import Page from './Page'
 import SEO from '../seo/SEO'
-import { Reveal } from './Section'
 import { legalMeta } from '../data/legal'
 
 /**
@@ -13,9 +12,9 @@ export default function LegalPage({ seo, eyebrow, title, sections }) {
     <Page>
       <SEO seo={seo} />
       <section className="page-hero"><div className="container">
-        <Reveal><span className="eyebrow">{eyebrow}</span></Reveal>
-        <Reveal><h1>{title}</h1></Reveal>
-        <Reveal><p className="legal__updated">Last updated · {legalMeta.updated}</p></Reveal>
+        <div className="hero-in" style={{ animationDelay: '0.02s' }}><span className="eyebrow">{eyebrow}</span></div>
+        <div className="hero-in" style={{ animationDelay: '0.1s' }}><h1>{title}</h1></div>
+        <div className="hero-in" style={{ animationDelay: '0.28s' }}><p className="legal__updated">Last updated · {legalMeta.updated}</p></div>
       </div></section>
       <section className="section" style={{ paddingTop: 20 }}><div className="container">
         <div className="legal">
