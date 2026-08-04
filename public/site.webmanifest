@@ -1,12 +1,20 @@
 {
   "name": "AUTO-CAN Solutions",
   "short_name": "AUTO-CAN",
-  "description": "Automotive engineering & embedded software since 2013.",
+  "description": "Automotive engineering & embedded software since 2013 — HiL testing, AUTOSAR, ADAS and next-gen mobility.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#04060b",
   "theme_color": "#04060b",
+  "categories": ["business", "engineering", "technology"],
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
-    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

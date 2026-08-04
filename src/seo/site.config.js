@@ -8,7 +8,8 @@ export const ORG = {
   slogan: 'Driven by AI. Powered by Innovation.',
   founded: '2013',
   logo: '/logo.png',
-  ogImage: '/hero-graphic.png',
+  ogImage: '/og-image.png',
+  ogImageSize: { width: 1200, height: 630 },
   email: 'info@auto-can.in',
   telephone: '', // TODO: e.g. '+91-141-0000000' — leave '' to omit
   sameAs: [

@@ -28,6 +28,14 @@ export function organizationSchema() {
       'OTA updates', 'V2X', 'Automotive cybersecurity',
     ],
   }
+  org.contactPoint = [{
+    '@type': 'ContactPoint',
+    contactType: 'sales',
+    email: ORG.email,
+    areaServed: ORG.areaServed,
+    availableLanguage: ['en'],
+    ...(ORG.telephone ? { telephone: ORG.telephone } : {}),
+  }]
   if (ORG.telephone) org.telephone = ORG.telephone
   if (ORG.sameAs?.length) org.sameAs = ORG.sameAs
   return org
@@ -61,9 +69,9 @@ export function websiteSchema() {
   }
 }
 
-export function webPageSchema({ path, title, description }) {
+export function webPageSchema({ path, title, description, type }) {
   return {
-    '@type': 'WebPage',
+    '@type': type || 'WebPage',
     '@id': SITE_URL + path + '#webpage',
     url: SITE_URL + path,
     name: title,
@@ -71,6 +79,7 @@ export function webPageSchema({ path, title, description }) {
     isPartOf: { '@id': SITE_URL + '/#website' },
     about: { '@id': SITE_URL + '/#organization' },
     inLanguage: 'en',
+    primaryImageOfPage: { '@type': 'ImageObject', url: abs(ORG.ogImage) },
   }
 }
 
