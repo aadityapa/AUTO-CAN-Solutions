@@ -17,7 +17,7 @@ _Complete reference: overview, links, architecture, integrations, and full sourc
 | **Prerendering** | vite-react-ssg (static HTML per route) |
 | **Routing** | React Router 6 |
 | **Animation** | Framer Motion 11 (3D tilt, magnetic buttons, cursor glow, particle field) |
-| **SEO** | Per-page meta + JSON-LD (Organization, WebSite, LocalBusiness, WebPage, Breadcrumb, FAQ) |
+| **SEO** | Per-page meta + JSON-LD (Organization, WebSite, ProfessionalService, WebPage, BreadcrumbList, FAQPage, ItemList/Service) |
 | **Backend** | None — fully static (no server, no database) |
 | **Domain** | https://www.auto-can-solution.com |
 
@@ -48,7 +48,7 @@ redirects `/privacy` → `/privacy-policy`, `/terms` → `/terms-and-conditions`
 
 ```bash
 npm ci           # install exactly what package-lock.json pins
-npm run dev      # dev server → http://localhost:5173
+npm run dev      # dev server → http://localhost:8013 (port set in vite.config.js)
 npm run build    # regenerate sitemap, then static prerender → /dist
 npm run preview  # preview production build
 npm run lint     # ESLint, including react-hooks and jsx-a11y
@@ -68,9 +68,10 @@ Deploy the **`dist/`** folder to any static host (Vercel, Netlify, Cloudflare Pa
 No server runtime required. `vercel.json` carries the production config: security headers
 (including CSP), cache-control per asset class, `cleanUrls`, and redirects.
 
-**CI** — `.github/workflows/ci.yml` runs `npm ci`, lint, and build on every push and pull
-request, then asserts that every route prerendered, that the committed sitemap matches a fresh
-build, and that no placeholder text reached the HTML.
+**CI** — `.github/workflows/ci.yml` runs `npm ci`, lint, and build on pushes to `main` and on
+pull requests, then asserts that every route prerendered, that the generated `dist/sitemap.xml`
+is well-formed with the expected URL count and production domain, and that no placeholder text
+reached the HTML. (A push to a feature branch with no open PR runs nothing.)
 
 ---
 
@@ -125,7 +126,10 @@ redirect flow and would break the AJAX submission. The honeypot is the spam defe
 
 - **Prerendered HTML** per route (Google + AI crawlers see real content)
 - **Per-page** `<title>`, description, canonical, Open Graph, Twitter
-- **JSON-LD** graphs: Organization, WebSite, ProfessionalService, WebPage, BreadcrumbList, FAQPage
+- **JSON-LD** graphs: Organization, WebSite, ProfessionalService (site-wide, 404 included);
+  WebPage + BreadcrumbList (the eight content pages, not 404); FAQPage (Home, Services);
+  ItemList + Service (Services). The helper is named `localBusinessSchema`, but the `@type` it
+  emits is `ProfessionalService` — no `LocalBusiness` node appears in the output.
 - **AEO:** FAQ content on-page + FAQPage schema (answer-engine friendly)
 - **GEO:** `llms.txt` + `robots.txt` allowing GPTBot, PerplexityBot, Google-Extended, ClaudeBot, etc.
 - See **SEO-GUIDE.md** for the off-page ranking checklist.
@@ -220,7 +224,7 @@ _edits here are overwritten. 59 files._
     "globals": "^15.9.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
 ```

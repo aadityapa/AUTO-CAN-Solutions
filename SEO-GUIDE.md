@@ -8,7 +8,7 @@ Honest expectation first: **no one can guarantee the #1 spot on Google.** Rankin
 
 - Static prerendering (real HTML per page) — works for Google **and** AI crawlers
 - Unique title, description, canonical, Open Graph & Twitter tags per page
-- JSON-LD: Organization, WebSite, ProfessionalService, WebPage, BreadcrumbList, FAQPage
+- JSON-LD: Organization, WebSite, ProfessionalService, WebPage, BreadcrumbList, FAQPage, ItemList + Service
 - FAQ content for answer engines (AEO)
 - `robots.txt` (allows AI bots), `sitemap.xml` (generated at build, with real `lastmod` dates), `llms.txt`, web manifest
 - Fast, mobile-first, semantic markup
