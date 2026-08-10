@@ -6,6 +6,7 @@ import { pageSeo } from '../seo/pages.seo'
 import { Reveal } from '../components/Section'
 import MagneticButton from '../components/MagneticButton'
 import { company, engagementTerms } from '../data/site'
+import { formEndpoint } from '../seo/site.config'
 import { MailIcon, PinIcon, FactoryIcon, HandshakeIcon } from '../components/Icons'
 
 const INTERESTS = [
@@ -95,7 +96,7 @@ export default function Contact() {
     delete data._honey
 
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${company.email}`, {
+      const res = await fetch(formEndpoint(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({

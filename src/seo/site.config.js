@@ -41,3 +41,17 @@ export const ORG = {
   ],
   areaServed: ['North America', 'Europe', 'Japan', 'APAC', 'India'],
 }
+
+// ── Contact form delivery ──────────────────────────────────────────
+// The enquiry form posts to FormSubmit. Addressing it by raw email puts
+// ORG.email in the client bundle in plain text, where scrapers will find it.
+// FormSubmit issues a random token per address (shown on your FormSubmit
+// dashboard after the address is activated) that routes to the same mailbox
+// without revealing it — set it here and the email drops out of the bundle.
+//
+// Activation is one-time: the first submission to a new address triggers a
+// confirmation email that must be clicked before any enquiry is delivered.
+export const FORMSUBMIT_TOKEN = '' // e.g. 'a1b2c3d4e5f6...' — falls back to ORG.email
+
+export const formEndpoint = () =>
+  `https://formsubmit.co/ajax/${FORMSUBMIT_TOKEN || ORG.email}`
