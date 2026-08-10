@@ -1,6 +1,12 @@
 // ── Central SEO config ─────────────────────────────────────────────
-// Change SITE_URL to your real domain, then fill in phone/address to
-// unlock full LocalBusiness rich results.
+// Single source of truth for the domain, organisation identity, and the
+// address/contact data that feeds the JSON-LD (Organization, LocalBusiness).
+//
+// Every optional field below is omitted from the emitted schema when left
+// empty (see src/seo/schema.js), so a blank value is always safe. Never put
+// approximate or placeholder contact data here — search engines treat
+// inaccurate business details as a trust signal against the site. Fill each
+// field once the real value is confirmed.
 export const SITE_URL = 'https://www.auto-can-solution.com'
 export const ORG = {
   name: 'AUTO-CAN Solutions',
@@ -11,16 +17,22 @@ export const ORG = {
   ogImage: '/og-image.png',
   ogImageSize: { width: 1200, height: 630 },
   email: 'info@auto-can.in',
-  telephone: '', // TODO: e.g. '+91-141-0000000' — leave '' to omit
-  sameAs: [
-    // TODO: add your real profiles
-    // 'https://www.linkedin.com/company/auto-can-solutions',
-  ],
+
+  // Format as an international number, e.g. '+91-141-4012345'.
+  telephone: '',
+
+  // Public profiles that confirm the entity, e.g.
+  // 'https://www.linkedin.com/company/auto-can-solutions'
+  sameAs: [],
+
+  // Registered head office. Supplying streetAddress + postalCode together
+  // unlocks the full LocalBusiness rich result; locality alone still yields a
+  // valid, if less detailed, address block.
   hq: {
-    streetAddress: '', // TODO: street address in Jaipur
+    streetAddress: '',
     addressLocality: 'Jaipur',
     addressRegion: 'Rajasthan',
-    postalCode: '', // TODO
+    postalCode: '', // Jaipur postcodes are in the 302xxx range
     addressCountry: 'IN',
   },
   deliveryCentres: [

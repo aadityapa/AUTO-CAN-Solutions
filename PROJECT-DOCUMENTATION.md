@@ -3,11 +3,16 @@
 _Complete reference: overview, links, architecture, integrations, and full source code._
 _Generated: 2026-07-11_
 
+> ⚠️ **This is a point-in-time snapshot.** The embedded source listings below reflect the
+> repository as of the generation date and have since drifted (the site now has privacy and
+> terms pages, a rebuilt contact form, and a different domain). Treat `README.md` and the
+> actual files in `src/` as authoritative; regenerate this document before relying on it.
+
 ---
 
 ## 1. Overview
 
-**AUTO-CAN Solutions** is an automotive engineering & embedded software company (founded 2013, Jaipur, India; delivery centres in Pune). This repository is its marketing website — a modern, animated, **statically prerendered** React site optimised for search engines and AI answer engines.
+**AUTO-CAN Solutions** is an automotive engineering & embedded software company (founded 2013, Jaipur, India; delivery centres in Jaipur and Pune). This repository is its marketing website — a modern, animated, **statically prerendered** React site optimised for search engines and AI answer engines.
 
 | | |
 |---|---|
@@ -17,7 +22,7 @@ _Generated: 2026-07-11_
 | **Animation** | Framer Motion 11 (3D tilt, magnetic buttons, cursor glow, particle field) |
 | **SEO** | Per-page meta + JSON-LD (Organization, WebSite, LocalBusiness, WebPage, Breadcrumb, FAQ) |
 | **Backend** | None — fully static (no server, no database) |
-| **Placeholder domain** | https://www.auto-can.in |
+| **Domain** | https://www.auto-can-solution.com |
 
 ---
 

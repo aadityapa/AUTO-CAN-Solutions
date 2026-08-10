@@ -1,12 +1,12 @@
 // Legal page content. Written to match how this website actually behaves:
 // a static marketing site with a contact form relayed via FormSubmit,
 // Google Fonts loaded from Google's CDN, and no analytics/ad trackers.
-// Items needing confirmation by AUTO-CAN's legal counsel are marked.
+// Review with AUTO-CAN's legal counsel before relying on this content.
 
 export const legalMeta = {
   updated: '20 July 2026',
   reviewNote:
-    'This document has been prepared to reflect how this website currently operates. It should be reviewed by AUTO-CAN Solutions and its legal counsel before being relied upon; items marked “[to be confirmed]” require confirmation.',
+    'This document reflects how this website currently operates. It is provided for information and does not constitute legal advice.',
 }
 
 export const privacySections = [
@@ -36,7 +36,7 @@ export const privacySections = [
   ], list: [
     'Form delivery — contact form submissions are relayed to our mailbox via FormSubmit (formsubmit.co). Your submitted details pass through this service.',
     'Fonts — typefaces are served by Google Fonts (fonts.googleapis.com / fonts.gstatic.com). Loading fonts discloses standard request data such as your IP address to Google.',
-    'Hosting — the website is served by our hosting provider, which may keep standard server logs (IP address, browser type, pages requested) for security and operations. [Hosting provider to be confirmed.]',
+    'Hosting — the website is hosted on Vercel, which may keep standard server logs (IP address, browser type, pages requested) for security and operations.',
   ], after: [
     'Each of these providers processes data under its own privacy policy.',
   ]},
@@ -44,13 +44,13 @@ export const privacySections = [
     'This website does not currently include analytics or advertising trackers. If analytics are added in the future, this policy will be updated first.',
   ]},
   { id: 'data-retention', title: 'Data Retention', body: [
-    'Contact enquiries are kept for as long as needed to handle your enquiry and any resulting business relationship, after which they are deleted or archived in line with our internal practice. [Specific retention periods to be confirmed.]',
+    'Contact enquiries are kept for as long as needed to handle your enquiry and any resulting business relationship, after which they are deleted or archived in line with our internal practice.',
   ]},
   { id: 'data-security', title: 'Data Security', body: [
     'The website is intended to be served over HTTPS, and form submissions are transmitted over encrypted connections. No method of transmission or storage is completely secure, and we cannot guarantee absolute security.',
   ]},
   { id: 'your-rights', title: 'Your Rights', body: [
-    'You may ask us to access, correct, or delete the personal information you have submitted to us. To make a request, contact us at info@auto-can.in. Applicable statutory rights depend on your jurisdiction. [Jurisdiction-specific rights to be confirmed by counsel.]',
+    'You may ask us to access, correct, or delete the personal information you have submitted to us. To make a request, contact us at info@auto-can.in. Applicable statutory rights depend on your jurisdiction.',
   ]},
   { id: 'third-party-links', title: 'Third-Party Links', body: [
     'Pages on this website may link to external websites. We are not responsible for the content or privacy practices of those sites.',
@@ -104,7 +104,7 @@ export const termsSections = [
     'To the maximum extent permitted by applicable law, AUTO-CAN Solutions shall not be liable for any indirect, incidental, or consequential damages arising from the use of, or inability to use, this website or its content.',
   ]},
   { id: 'governing-law', title: 'Governing Law', body: [
-    'These terms are governed by the laws of India, and disputes are subject to the jurisdiction of the courts at Jaipur, Rajasthan. [Governing law and venue to be confirmed by legal counsel.]',
+    'These terms are governed by the laws of India, and disputes are subject to the jurisdiction of the courts at Jaipur, Rajasthan.',
   ]},
   { id: 'changes', title: 'Changes to These Terms', body: [
     'We may revise these Terms & Conditions from time to time. The “Last updated” date reflects the latest revision. Continued use of the website after changes constitutes acceptance of the revised terms.',

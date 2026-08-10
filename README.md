@@ -48,10 +48,15 @@ Deploy the `dist/` folder to any static host (Netlify, Vercel, Cloudflare Pages,
 
 ## ⚠️ Before you go live — do these (one-time)
 
-Open **`src/seo/site.config.js`** and set:
-1. `SITE_URL` → your real domain (currently `https://www.auto-can.in`). Then update the same domain in `public/robots.txt`, `public/sitemap.xml`, and `public/llms.txt`.
-2. `telephone`, `hq.streetAddress`, `hq.postalCode` → your real contact details (unlocks full LocalBusiness rich results).
-3. `sameAs` → your real LinkedIn / social profile URLs.
+The domain is set to **`https://www.auto-can-solution.com`** in `src/seo/site.config.js`, `public/robots.txt`, `public/sitemap.xml`, and `public/llms.txt`. If it ever changes, update all four.
+
+Still outstanding in **`src/seo/site.config.js`**:
+
+1. `telephone` → international format, e.g. `+91-141-4012345`.
+2. `hq.streetAddress` and `hq.postalCode` → the registered Jaipur address (both together unlock the full LocalBusiness rich result).
+3. `sameAs` → real LinkedIn / social profile URLs.
+
+Each of these is omitted from the JSON-LD while empty, so the site is safe to ship as-is — but leave them blank rather than approximate. Search engines treat inaccurate business details as a negative trust signal.
 
 See **`SEO-GUIDE.md`** for the full "get found on Google & AI" checklist (Search Console, backlinks, Google Business Profile, etc.).
 
