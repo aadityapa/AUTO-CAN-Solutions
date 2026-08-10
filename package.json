@@ -5,8 +5,10 @@
   "type": "module",
   "description": "AUTO-CAN Solutions \u2014 Automotive Engineering & Embedded Software. Marketing website.",
   "scripts": {
+    "predev": "npm run sitemap",
     "dev": "vite",
-    "build": "vite-react-ssg build",
+    "build": "npm run sitemap && vite-react-ssg build",
+    "sitemap": "node scripts/generate-sitemap.mjs",
     "preview": "vite preview",
     "lint": "eslint ."
   },
