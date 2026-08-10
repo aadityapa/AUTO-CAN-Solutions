@@ -85,7 +85,7 @@ This is a **static front-end site**. There is **no custom backend API, no databa
 - `src/seo/pages.seo.js` — per-page titles/descriptions
 
 **External resources used:**
-- **Google Fonts** — `https://fonts.googleapis.com` (Sora, Inter, JetBrains Mono). No API key.
+- **Google Fonts** — `https://fonts.googleapis.com` (Space Grotesk, Inter, JetBrains Mono). No API key.
 - **FormSubmit** — `https://formsubmit.co`, for contact form delivery (see below). No API key.
 - No analytics or trackers are wired in.
 

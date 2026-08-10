@@ -10,16 +10,24 @@ Honest expectation first: **no one can guarantee the #1 spot on Google.** Rankin
 - Unique title, description, canonical, Open Graph & Twitter tags per page
 - JSON-LD: Organization, WebSite, ProfessionalService, WebPage, BreadcrumbList, FAQPage
 - FAQ content for answer engines (AEO)
-- `robots.txt` (allows AI bots), `sitemap.xml`, `llms.txt`, web manifest
+- `robots.txt` (allows AI bots), `sitemap.xml` (generated at build, with real `lastmod` dates), `llms.txt`, web manifest
 - Fast, mobile-first, semantic markup
 
 ---
 
 ## 🔧 One-time setup (do these first)
 
-1. **Set your real domain** in `src/seo/site.config.js` (`SITE_URL`), then the same in `public/robots.txt`, `public/sitemap.xml`, `public/llms.txt`.
-2. **Add contact details** in `src/seo/site.config.js` (`telephone`, `hq.streetAddress`, `hq.postalCode`, `sameAs`).
-3. Rebuild: `npm run build` and deploy `dist/`.
+1. **Confirm the domain.** `SITE_URL` in `src/seo/site.config.js` is the source of truth and is
+   already set to `https://www.auto-can-solution.com`. If it changes, mirror it in
+   `public/robots.txt` and `public/llms.txt` — `sitemap.xml` is generated from `SITE_URL` and
+   needs no edit (editing it by hand does nothing; it is overwritten on every build).
+2. **Activate the contact form.** FormSubmit needs a one-time email confirmation before any
+   enquiry is delivered, and the form's mailto fallback means a dead form still looks healthy.
+   Send a test enquiry and confirm it arrives.
+3. **Add contact details** in `src/seo/site.config.js` (`telephone`, `hq.streetAddress`,
+   `hq.postalCode`, `sameAs`). Leave anything unconfirmed blank rather than approximate —
+   inaccurate business details work against you.
+4. Rebuild: `npm run build` and deploy `dist/`.
 
 ## 📈 Off-page checklist (this is what actually moves rankings)
 
