@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "npm run sitemap && vite-react-ssg build",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "docs": "node scripts/generate-docs.mjs",
     "preview": "vite preview",
     "lint": "eslint ."
   },
