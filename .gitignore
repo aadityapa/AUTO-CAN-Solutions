@@ -1,6 +1,9 @@
 node_modules
 dist
 dist-ssr
+dist-release
+.vite-react-ssg-temp
+vite.config.js.timestamp-*
 *.local
 .DS_Store
 .vscode/*

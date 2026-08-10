@@ -10,7 +10,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
  * at lint time is far cheaper than catching them in an audit.
  */
 export default [
-  { ignores: ['dist/**', 'dist-release/**', 'node_modules/**', 'scripts/**'] },
+  { ignores: ['dist/**', 'node_modules/**', 'scripts/**'] },
   js.configs.recommended,
   {
     files: ['**/*.{js,jsx}'],
