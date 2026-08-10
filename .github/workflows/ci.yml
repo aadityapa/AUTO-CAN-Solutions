@@ -1,0 +1,77 @@
+# Runs the same checks Vercel will run, on every push and pull request.
+#
+# The critical step is `npm ci`: it installs strictly from package-lock.json and
+# fails on any peer-dependency conflict. A plain `npm install` on a developer
+# machine can paper over a broken dependency tree that then breaks the deploy —
+# which is exactly how an incompatible vite-react-ssg release slipped in once.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch makes an in-flight run redundant.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint & build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # generate-sitemap.mjs reads commit dates for <lastmod>; a shallow
+          # clone would report every page as changed today.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Check the generated sitemap
+        run: |
+          set -e
+          file=dist/sitemap.xml
+          [ -s "$file" ] || { echo "::error::$file missing"; exit 1; }
+          python3 -c "import xml.dom.minidom,sys; xml.dom.minidom.parse('$file')"
+          count=$(grep -c '<loc>' "$file")
+          [ "$count" -eq 8 ] || { echo "::error::expected 8 URLs, found $count"; exit 1; }
+          if grep -q 'localhost\|auto-can\.in/' "$file"; then
+            echo "::error::sitemap points at a non-production domain"
+            exit 1
+          fi
+
+      - name: Check every route prerendered to HTML
+        run: |
+          missing=0
+          for page in index services expertise about careers contact \
+                      privacy-policy terms-and-conditions 404; do
+            if [ ! -s "dist/$page.html" ]; then
+              echo "::error::dist/$page.html is missing or empty"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: Check no placeholder text reached the build
+        run: |
+          if grep -rniE 'to be confirmed|lorem ipsum|TODO:' dist/*.html; then
+            echo "::error::placeholder text found in prerendered HTML"
+            exit 1
+          fi
