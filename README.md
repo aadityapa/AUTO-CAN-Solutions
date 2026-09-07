@@ -85,7 +85,9 @@ Still outstanding in **`src/seo/site.config.js`**:
 
 Each of these is omitted from the JSON-LD while empty, so the site is safe to ship as-is — but leave them blank rather than approximate. Search engines treat inaccurate business details as a negative trust signal.
 
-See **`SEO-GUIDE.md`** for the full "get found on Google & AI" checklist (Search Console, backlinks, Google Business Profile, etc.).
+See **`GO-LIVE.md`** for the full launch checklist (what's verified, what's still
+outstanding, deploy steps) and **`SEO-GUIDE.md`** for the "get found on Google &
+AI" checklist (Search Console, backlinks, Google Business Profile, etc.).
 
 ## Editing content
 
