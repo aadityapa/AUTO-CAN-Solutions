@@ -54,6 +54,14 @@ export function VModel() {
   const right = [
     ['Unit Testing', 450, 200], ['Integration & HiL', 545, 120], ['System Validation', 640, 40],
   ]
+  // Left leg pairs with the right leg it is verified by (System Design ↔
+  // Integration & HiL, etc.); Implementation sits alone at the apex.
+  const stages = [
+    { name: 'Requirements', verifiedBy: 'System Validation' },
+    { name: 'System Design', verifiedBy: 'Integration & HiL' },
+    { name: 'SW Architecture', verifiedBy: 'Unit Testing' },
+    { name: 'Implementation', verifiedBy: null },
+  ]
   return (
     <section className="xp-vmodel" ref={ref}>
       <div className="container">
@@ -63,7 +71,29 @@ export function VModel() {
           <p className="section-lead mx-auto" style={{ textAlign: 'center' }}>Every AUTO-CAN engagement follows the automotive V-model — requirements on the way down, verification all the way up.</p>
         </Reveal>
         <div className="xp-vmodel__stage">
-          <svg viewBox="0 0 700 340" className="xp-vmodel__svg" aria-hidden="true">
+          {/*
+            The SVG is decorative and hidden from assistive tech, and on narrow
+            screens it scales to unreadable ~5px labels, so the same stages are
+            also rendered as an HTML list: visible on mobile in place of the SVG,
+            visually hidden (but read out) on desktop.
+          */}
+          <ol className="xp-vmodel__list" aria-label="V-model stages">
+            {stages.map(({ name, verifiedBy }) => (
+              <li key={name} className="xp-vmodel__row">
+                <span className="xp-vmodel__step xp-vmodel__step--left">{name}</span>
+                {verifiedBy && (
+                  <>
+                    <span className="xp-vmodel__link" aria-hidden="true" />
+                    <span className="xp-vmodel__step xp-vmodel__step--right">
+                      <span className="sr-only">verified by </span>{verifiedBy}
+                    </span>
+                  </>
+                )}
+              </li>
+            ))}
+          </ol>
+          {/* 20px of horizontal slack so the outer labels are not clipped at the edges. */}
+          <svg viewBox="-20 0 740 340" className="xp-vmodel__svg" aria-hidden="true">
             <motion.path
               d="M 60 50 L 345 295 L 640 50"
               fill="none" stroke="url(#vgrad)" strokeWidth="2.5" strokeLinecap="round"
@@ -76,12 +106,24 @@ export function VModel() {
                 <stop offset="100%" stopColor="#818CF8" />
               </linearGradient>
             </defs>
-            {[...left, ...right].map(([label, x, y], i) => (
-              <motion.g key={label} initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.15 * i, duration: 0.4 }}>
-                <circle cx={x} cy={y} r="7" fill="#04060B" stroke={i < 4 ? '#818CF8' : '#22D3EE'} strokeWidth="2.5" />
-                <text x={x} y={y - 16} textAnchor="middle" className="xp-vmodel__label">{label}</text>
-              </motion.g>
-            ))}
+            {[...left, ...right].map(([label, x, y], i) => {
+              // Labels sit clear of the V: the two top nodes keep theirs above
+              // (the diagonal only leaves them downward), the apex takes its
+              // below, and the mid-leg nodes — which the line used to run
+              // straight through — get theirs beside, on the outside of the V.
+              const top = i === 0 || i === 6
+              const apex = i === 3
+              const onLeft = i < 3
+              const tx = top || apex ? x : onLeft ? x - 14 : x + 16
+              const ty = top ? y - 16 : apex ? y + 28 : y + 4.5
+              const anchor = top || apex ? 'middle' : onLeft ? 'end' : 'start'
+              return (
+                <motion.g key={label} initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.15 * i, duration: 0.4 }}>
+                  <circle cx={x} cy={y} r="7" fill="#04060B" stroke={i < 4 ? '#818CF8' : '#22D3EE'} strokeWidth="2.5" />
+                  <text x={tx} y={ty} textAnchor={anchor} className="xp-vmodel__label">{label}</text>
+                </motion.g>
+              )
+            })}
             <motion.line x1="150" y1="120" x2="545" y2="120" stroke="#818CF8" strokeDasharray="5 7" strokeOpacity="0.3" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 1.2 }} />
             <motion.line x1="240" y1="200" x2="450" y2="200" stroke="#818CF8" strokeDasharray="5 7" strokeOpacity="0.3" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 1.35 }} />
           </svg>

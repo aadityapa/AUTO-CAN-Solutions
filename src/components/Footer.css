@@ -32,6 +32,8 @@
   gap: 40px;
   margin: 0 0 72px;
 }
+/* Without the CTA band the footer's generous top padding reads as a hole. */
+.footer--compact { padding-top: clamp(28px, 4vw, 44px); }
 .footer__ctatitle {
   font-family: var(--font-display);
   font-weight: 600;
@@ -70,7 +72,7 @@
 }
 .footer__muted { color: var(--text-faint); font-size: 0.9rem; line-height: 1.8; }
 
-.footer__col h3 {
+.footer__col .footer__coltitle {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   text-transform: uppercase;

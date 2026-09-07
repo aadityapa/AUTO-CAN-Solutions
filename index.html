@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <title>AUTO-CAN Solutions | Automotive Embedded Software &amp; HiL Testing</title>
-    <meta name="description" content="AUTO-CAN Solutions — automotive embedded software and engineering company. HiL testing, AUTOSAR, ADAS, CAN/LIN/UDS stacks, test automation and R&D for OEMs and Tier-1 suppliers." />
+    <!-- <title> and the description are set per route by src/seo/SEO.jsx and
+         baked into each prerendered page. Static copies here produced a second
+         <title> and a second description tag on every page. -->
     <meta name="author" content="AUTO-CAN Solutions" />
     <meta name="theme-color" content="#04060b" />
     <meta name="color-scheme" content="dark" />
@@ -45,6 +46,11 @@
         size-adjust: 105%; ascent-override: 96%; descent-override: 24%; line-gap-override: 0%;
       }
     </style>
+
+    <!-- Scroll-reveal sections are prerendered at opacity 0 and faded in by
+         script once they enter the viewport. Without script that never happens,
+         so this forces them visible for no-JS readers and text-only crawlers. -->
+    <noscript><style>[style*="opacity:0"], [style*="opacity: 0"], [style*="blur("] { opacity: 1 !important; transform: none !important; filter: none !important; }</style></noscript>
 
     <!-- The 3D models (~910 KB) are fetched by the hero scene itself, only on
          the route that shows it and only once it scrolls into view. Prefetching

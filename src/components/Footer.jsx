@@ -1,29 +1,43 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { company, navLinks } from '../data/site'
 import './Footer.css'
 
+/**
+ * Routes that already end in a conversion point: Home, Services and Careers
+ * each close with their own CTA band, and Contact *is* the destination. On
+ * those pages the global band would stack a second "Start a conversation"
+ * directly beneath the first — or, on Contact, link the visitor back to the
+ * form they are already looking at.
+ */
+const ROUTES_WITH_OWN_CTA = new Set(['/', '/services', '/careers', '/contact'])
+
 export default function Footer() {
+  const { pathname } = useLocation()
+  const showCta = !ROUTES_WITH_OWN_CTA.has(pathname.replace(/\/+$/, '') || '/')
+
   return (
-    <footer className="footer">
+    <footer className={`footer${showCta ? '' : ' footer--compact'}`}>
       <div className="footer__glow" />
       <div className="container">
-        <motion.div
-          className="footer__cta"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="footer__ctacopy">
-            <span className="eyebrow">Let’s build together</span>
-            <h2 className="footer__ctatitle">Put a proven automotive bench behind your next program.</h2>
-            <p className="footer__ctatext">Same-day deployment · 25–45% buffer bench · a decade of delivery.</p>
-          </div>
-          <Link to="/contact" className="btn btn-primary footer__ctabtn">
-            Start a conversation <span className="arrow" aria-hidden="true">→</span>
-          </Link>
-        </motion.div>
+        {showCta && (
+          <motion.div
+            className="footer__cta"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="footer__ctacopy">
+              <span className="eyebrow">Let’s build together</span>
+              <h2 className="footer__ctatitle">Put a proven automotive bench behind your next program.</h2>
+              <p className="footer__ctatext">Same-day deployment · 25–45% buffer bench · a decade of delivery.</p>
+            </div>
+            <Link to="/contact" className="btn btn-primary footer__ctabtn">
+              Start a conversation <span className="arrow" aria-hidden="true">→</span>
+            </Link>
+          </motion.div>
+        )}
 
         <div className="footer__grid">
           <div className="footer__brandcol">
@@ -39,14 +53,14 @@ export default function Footer() {
           </div>
 
           <div className="footer__col">
-            <h3>Navigate</h3>
+            <h2 className="footer__coltitle">Navigate</h2>
             {navLinks.map((l) => (
               <Link key={l.to} to={l.to}>{l.label}</Link>
             ))}
           </div>
 
           <div className="footer__col">
-            <h3>Capabilities</h3>
+            <h2 className="footer__coltitle">Capabilities</h2>
             <Link to="/services">Embedded SW Stacks</Link>
             <Link to="/services">Test Automation</Link>
             <Link to="/expertise">HiL &amp; V&amp;V</Link>
@@ -54,7 +68,7 @@ export default function Footer() {
           </div>
 
           <div className="footer__col">
-            <h3>Engage</h3>
+            <h2 className="footer__coltitle">Engage</h2>
             <Link to="/careers">ODC Model</Link>
             <Link to="/careers">Deputation Model</Link>
             <Link to="/careers">Campus Connect</Link>

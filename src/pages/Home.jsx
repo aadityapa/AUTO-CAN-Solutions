@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Page from '../components/Page'
 import SEO from '../seo/SEO'
 import { pageSeo } from '../seo/pages.seo'
@@ -16,11 +16,33 @@ import DataRiver from '../components/DataRiver'
 import { Manifesto, VModel, TwinSync } from '../components/XpSections'
 import { company, stats, domains, services, timeline, differentiators } from '../data/site'
 const marqueeItems = ['HiL Testing','AUTOSAR','ISO 26262','CAN · LIN · UDS','ADAS','Automotive Ethernet','OTA Updates','V2X','Cybersecurity','MISRA C']
+/**
+ * True once the hero renders side-by-side (copy left, 3D scene right). Starts
+ * true so the server and first client render agree; a stacked layout flips it
+ * after mount, which only changes motion-value ranges, never markup.
+ */
+function useWideHero() {
+  const [wide, setWide] = useState(true)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1025px)')
+    const sync = () => setWide(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+  return wide
+}
+
 export default function Home() {
   const heroRef = useRef(null)
+  const wide = useWideHero()
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
-  const yContent = useTransform(scrollYProgress, [0, 1], [0, 120])
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+  // The parallax fade is tied to the hero's own height. That works when the
+  // hero is one viewport tall, but once it stacks (≤1024px) it grows to ~1.6
+  // viewports and the CTAs were sitting at half opacity while still fully on
+  // screen — reading as disabled. Below the breakpoint the ranges are flat.
+  const yContent = useTransform(scrollYProgress, [0, 1], wide ? [0, 120] : [0, 0])
+  const opacity = useTransform(scrollYProgress, [0, 0.8], wide ? [1, 0] : [1, 1])
   return (
     <Page>
       <SEO seo={pageSeo.home} faqs={faqs} />
