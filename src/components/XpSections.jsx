@@ -1,6 +1,5 @@
 import { motion, useScroll } from 'framer-motion'
 import { useRef } from 'react'
-import CountUp from './CountUp'
 import MagneticButton from './MagneticButton'
 import { Reveal } from './Section'
 
@@ -216,10 +215,17 @@ export function TwinSync() {
                 <circle cx="70" cy="70" r="14" fill="none" stroke="#60A5FA" strokeWidth="1.6" strokeDasharray="4 4" />
                 <circle cx="228" cy="70" r="14" fill="none" stroke="#60A5FA" strokeWidth="1.6" strokeDasharray="4 4" />
               </svg>
+              {/*
+                Qualitative by design. These previously read "99% signal
+                parity" and "1,248 test cases / cycle" — precise figures with
+                nothing behind them, which a prospective OEM client would
+                reasonably treat as a measured claim. Describe the capability
+                instead; swap in real numbers only when a program can back them.
+              */}
               <div className="xp-twin__stats">
-                <div><div className="k"><CountUp to={99} suffix="%" /></div><div className="l">Signal parity</div></div>
-                <div><div className="k"><CountUp to={1248} suffix="" /></div><div className="l">Test cases / cycle</div></div>
-                <div><div className="k"><CountUp to={24} suffix="/7" /></div><div className="l">Continuous validation</div></div>
+                <div><div className="k">Signal</div><div className="l">Bench-to-vehicle parity</div></div>
+                <div><div className="k">Full</div><div className="l">Regression suite per cycle</div></div>
+                <div><div className="k">24/7</div><div className="l">Continuous validation</div></div>
               </div>
             </div>
           </Reveal>
