@@ -223,7 +223,7 @@ export function TwinSync() {
                 instead; swap in real numbers only when a program can back them.
               */}
               <div className="xp-twin__stats">
-                <div><div className="k">Signal</div><div className="l">Bench-to-vehicle parity</div></div>
+                <div><div className="k">Parity</div><div className="l">Bench-to-vehicle signals</div></div>
                 <div><div className="k">Full</div><div className="l">Regression suite per cycle</div></div>
                 <div><div className="k">24/7</div><div className="l">Continuous validation</div></div>
               </div>

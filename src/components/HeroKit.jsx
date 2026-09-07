@@ -26,13 +26,17 @@ export function CycleCard({ items, interval, className, icon, floatDur }) {
     </motion.div>
   )
 }
+// Decorative console flavour. Deliberately qualitative: earlier versions read
+// "1,248/1,248 test cases passed" and "AUTOSAR RTE generated in 3.2s", which a
+// visitor could reasonably read as measured results, and "ISO 26262 ASIL-D
+// audit · compliant" implies a certification the site does not claim elsewhere.
 export const BOOT_LINES = [
-  '> HiL rig · 1,248/1,248 test cases passed ✓',
-  '> AUTOSAR RTE generated in 3.2s ✓',
+  '> HiL rig · regression suite passed ✓',
+  '> AUTOSAR RTE · generated and validated ✓',
   '> OTA package signed · SHA-256 verified ✓',
-  '> CAN FD bus load 42% · timing optimal ✓',
-  '> ISO 26262 ASIL-D audit · compliant ✓',
-  '> ADAS perception stack · 60 fps validated ✓',
+  '> CAN FD bus timing · within budget ✓',
+  '> ISO 26262 ASIL-D workflow · applied ✓',
+  '> ADAS perception stack · validated ✓',
 ]
 export function BootConsole() {
   const [line, setLine] = useState(0)

@@ -2567,13 +2567,17 @@ export function CycleCard({ items, interval, className, icon, floatDur }) {
     </motion.div>
   )
 }
+// Decorative console flavour. Deliberately qualitative: earlier versions read
+// "1,248/1,248 test cases passed" and "AUTOSAR RTE generated in 3.2s", which a
+// visitor could reasonably read as measured results, and "ISO 26262 ASIL-D
+// audit · compliant" implies a certification the site does not claim elsewhere.
 export const BOOT_LINES = [
-  '> HiL rig · 1,248/1,248 test cases passed ✓',
-  '> AUTOSAR RTE generated in 3.2s ✓',
+  '> HiL rig · regression suite passed ✓',
+  '> AUTOSAR RTE · generated and validated ✓',
   '> OTA package signed · SHA-256 verified ✓',
-  '> CAN FD bus load 42% · timing optimal ✓',
-  '> ISO 26262 ASIL-D audit · compliant ✓',
-  '> ADAS perception stack · 60 fps validated ✓',
+  '> CAN FD bus timing · within budget ✓',
+  '> ISO 26262 ASIL-D workflow · applied ✓',
+  '> ADAS perception stack · validated ✓',
 ]
 export function BootConsole() {
   const [line, setLine] = useState(0)
@@ -5186,7 +5190,6 @@ export default function TiltCard({
 ```jsx
 import { motion, useScroll } from 'framer-motion'
 import { useRef } from 'react'
-import CountUp from './CountUp'
 import MagneticButton from './MagneticButton'
 import { Reveal } from './Section'
 
@@ -5402,10 +5405,17 @@ export function TwinSync() {
                 <circle cx="70" cy="70" r="14" fill="none" stroke="#60A5FA" strokeWidth="1.6" strokeDasharray="4 4" />
                 <circle cx="228" cy="70" r="14" fill="none" stroke="#60A5FA" strokeWidth="1.6" strokeDasharray="4 4" />
               </svg>
+              {/*
+                Qualitative by design. These previously read "99% signal
+                parity" and "1,248 test cases / cycle" — precise figures with
+                nothing behind them, which a prospective OEM client would
+                reasonably treat as a measured claim. Describe the capability
+                instead; swap in real numbers only when a program can back them.
+              */}
               <div className="xp-twin__stats">
-                <div><div className="k"><CountUp to={99} suffix="%" /></div><div className="l">Signal parity</div></div>
-                <div><div className="k"><CountUp to={1248} suffix="" /></div><div className="l">Test cases / cycle</div></div>
-                <div><div className="k"><CountUp to={24} suffix="/7" /></div><div className="l">Continuous validation</div></div>
+                <div><div className="k">Parity</div><div className="l">Bench-to-vehicle signals</div></div>
+                <div><div className="k">Full</div><div className="l">Regression suite per cycle</div></div>
+                <div><div className="k">24/7</div><div className="l">Continuous validation</div></div>
               </div>
             </div>
           </Reveal>
