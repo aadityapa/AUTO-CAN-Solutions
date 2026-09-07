@@ -379,9 +379,10 @@ export default [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- <title> and the description are set per route by src/seo/SEO.jsx and
-         baked into each prerendered page. Static copies here produced a second
-         <title> and a second description tag on every page. -->
+    <!-- The page title and meta description are set per route by
+         src/seo/SEO.jsx and baked into each prerendered page. Static copies
+         here produced a duplicate of each on every page, so they live only in
+         src/seo/pages.seo.js now. -->
     <meta name="author" content="AUTO-CAN Solutions" />
     <meta name="theme-color" content="#04060b" />
     <meta name="color-scheme" content="dark" />
