@@ -183,7 +183,7 @@ autocan-website/
 
 # 7. Full source code
 
-_Generated from the working tree by `npm run docs` on 2026-08-10. Do not edit by hand —_
+_Generated from the working tree by `npm run docs` on 2026-09-07. Do not edit by hand —_
 _edits here are overwritten. 59 files._
 
 ## `package.json`
@@ -379,8 +379,9 @@ export default [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <title>AUTO-CAN Solutions | Automotive Embedded Software &amp; HiL Testing</title>
-    <meta name="description" content="AUTO-CAN Solutions — automotive embedded software and engineering company. HiL testing, AUTOSAR, ADAS, CAN/LIN/UDS stacks, test automation and R&D for OEMs and Tier-1 suppliers." />
+    <!-- <title> and the description are set per route by src/seo/SEO.jsx and
+         baked into each prerendered page. Static copies here produced a second
+         <title> and a second description tag on every page. -->
     <meta name="author" content="AUTO-CAN Solutions" />
     <meta name="theme-color" content="#04060b" />
     <meta name="color-scheme" content="dark" />
@@ -420,6 +421,11 @@ export default [
         size-adjust: 105%; ascent-override: 96%; descent-override: 24%; line-gap-override: 0%;
       }
     </style>
+
+    <!-- Scroll-reveal sections are prerendered at opacity 0 and faded in by
+         script once they enter the viewport. Without script that never happens,
+         so this forces them visible for no-JS readers and text-only crawlers. -->
+    <noscript><style>[style*="opacity:0"], [style*="opacity: 0"], [style*="blur("] { opacity: 1 !important; transform: none !important; filter: none !important; }</style></noscript>
 
     <!-- The 3D models (~910 KB) are fetched by the hero scene itself, only on
          the route that shows it and only once it scrolls into view. Prefetching
@@ -611,7 +617,7 @@ export default function SEO({ seo, faqs, extraNodes = [], noindex = false }) {
 export const pageSeo = {
   home: {
     path: '/', title: 'AUTO-CAN Solutions | Automotive Embedded Software & HiL Testing',
-    description: 'AUTO-CAN Solutions is an automotive embedded software and engineering company (est. 2013, Jaipur India). HiL testing, AUTOSAR, ADAS, CAN/LIN/UDS stacks, test automation and R&D for OEMs and Tier-1 suppliers.',
+    description: 'Automotive embedded software and engineering partner since 2013: HiL testing, AUTOSAR, ADAS, CAN/LIN/UDS stacks, test automation and R&D for OEMs and Tier-1 suppliers.',
     keywords: 'automotive embedded software, HiL testing, AUTOSAR, ADAS, ISO 26262, CAN LIN UDS, ECU testing, automotive engineering India',
     breadcrumb: [{ name: 'Home', path: '/' }],
   },
@@ -634,7 +640,7 @@ export const pageSeo = {
     breadcrumb: [{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }],
   },
   careers: {
-    path: '/careers', type: 'CollectionPage', title: 'Careers, Engagement Models & Campus Connect | AUTO-CAN Solutions',
+    path: '/careers', type: 'CollectionPage', title: 'Careers & Engagement Models | AUTO-CAN Solutions',
     description: 'ODC and Deputation engagement models, structured Learning & Development, and Campus Connect partnerships that turn fresh talent into automotive embedded engineers.',
     keywords: 'automotive engineering careers, ODC model, deputation model, campus connect, automotive embedded training, Jaipur Pune delivery centres',
     breadcrumb: [{ name: 'Home', path: '/' }, { name: 'Careers', path: '/careers' }],
@@ -1660,7 +1666,7 @@ export default function Expertise() {
 
 ```jsx
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Page from '../components/Page'
 import SEO from '../seo/SEO'
 import { pageSeo } from '../seo/pages.seo'
@@ -1677,11 +1683,33 @@ import DataRiver from '../components/DataRiver'
 import { Manifesto, VModel, TwinSync } from '../components/XpSections'
 import { company, stats, domains, services, timeline, differentiators } from '../data/site'
 const marqueeItems = ['HiL Testing','AUTOSAR','ISO 26262','CAN · LIN · UDS','ADAS','Automotive Ethernet','OTA Updates','V2X','Cybersecurity','MISRA C']
+/**
+ * True once the hero renders side-by-side (copy left, 3D scene right). Starts
+ * true so the server and first client render agree; a stacked layout flips it
+ * after mount, which only changes motion-value ranges, never markup.
+ */
+function useWideHero() {
+  const [wide, setWide] = useState(true)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1025px)')
+    const sync = () => setWide(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+  return wide
+}
+
 export default function Home() {
   const heroRef = useRef(null)
+  const wide = useWideHero()
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
-  const yContent = useTransform(scrollYProgress, [0, 1], [0, 120])
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+  // The parallax fade is tied to the hero's own height. That works when the
+  // hero is one viewport tall, but once it stacks (≤1024px) it grows to ~1.6
+  // viewports and the CTAs were sitting at half opacity while still fully on
+  // screen — reading as disabled. Below the breakpoint the ranges are flat.
+  const yContent = useTransform(scrollYProgress, [0, 1], wide ? [0, 120] : [0, 0])
+  const opacity = useTransform(scrollYProgress, [0, 0.8], wide ? [1, 0] : [1, 1])
   return (
     <Page>
       <SEO seo={pageSeo.home} faqs={faqs} />
@@ -2041,15 +2069,32 @@ import { useInView, useReducedMotion } from 'framer-motion'
  * Animated number that counts up when scrolled into view.
  * Assistive tech reads the final value once (via the visually-hidden span)
  * instead of every intermediate frame.
+ *
+ * The first render is always the final value. That keeps the prerendered HTML
+ * identical to the first client render whatever the visitor's motion
+ * preference — initialising from useReducedMotion() made the server emit "0"
+ * while a reduced-motion client emitted "10", which failed hydration for every
+ * counter and pushed the whole page into client-side rendering. It also means
+ * crawlers and no-JS readers see the real figure rather than a zero.
  */
 export default function CountUp({ to, suffix = '', duration = 1600 }) {
   const ref = useRef(null)
   const reduced = useReducedMotion()
   const inView = useInView(ref, { once: true, amount: 0.5 })
-  const [value, setValue] = useState(reduced ? to : 0)
+  const [value, setValue] = useState(to)
+  const [armed, setArmed] = useState(false)
+
+  // After hydration, and only when motion is welcome, reset to zero so the
+  // count-up has somewhere to start from. This runs before the counter can
+  // scroll into view, so the reset is never visible.
+  useEffect(() => {
+    if (reduced) return
+    setValue(0)
+    setArmed(true)
+  }, [reduced])
 
   useEffect(() => {
-    if (!inView || reduced) return
+    if (!inView || !armed) return
     let raf
     const start = performance.now()
     const tick = (now) => {
@@ -2060,7 +2105,7 @@ export default function CountUp({ to, suffix = '', duration = 1600 }) {
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [inView, to, duration, reduced])
+  }, [inView, armed, to, duration])
 
   return (
     <span ref={ref}>
@@ -2307,6 +2352,8 @@ export default function FAQ({
   gap: 40px;
   margin: 0 0 72px;
 }
+/* Without the CTA band the footer's generous top padding reads as a hole. */
+.footer--compact { padding-top: clamp(28px, 4vw, 44px); }
 .footer__ctatitle {
   font-family: var(--font-display);
   font-weight: 600;
@@ -2345,7 +2392,7 @@ export default function FAQ({
 }
 .footer__muted { color: var(--text-faint); font-size: 0.9rem; line-height: 1.8; }
 
-.footer__col h3 {
+.footer__col .footer__coltitle {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -2397,32 +2444,46 @@ export default function FAQ({
 ## `src/components/Footer.jsx`
 
 ```jsx
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { company, navLinks } from '../data/site'
 import './Footer.css'
 
+/**
+ * Routes that already end in a conversion point: Home, Services and Careers
+ * each close with their own CTA band, and Contact *is* the destination. On
+ * those pages the global band would stack a second "Start a conversation"
+ * directly beneath the first — or, on Contact, link the visitor back to the
+ * form they are already looking at.
+ */
+const ROUTES_WITH_OWN_CTA = new Set(['/', '/services', '/careers', '/contact'])
+
 export default function Footer() {
+  const { pathname } = useLocation()
+  const showCta = !ROUTES_WITH_OWN_CTA.has(pathname.replace(/\/+$/, '') || '/')
+
   return (
-    <footer className="footer">
+    <footer className={`footer${showCta ? '' : ' footer--compact'}`}>
       <div className="footer__glow" />
       <div className="container">
-        <motion.div
-          className="footer__cta"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="footer__ctacopy">
-            <span className="eyebrow">Let’s build together</span>
-            <h2 className="footer__ctatitle">Put a proven automotive bench behind your next program.</h2>
-            <p className="footer__ctatext">Same-day deployment · 25–45% buffer bench · a decade of delivery.</p>
-          </div>
-          <Link to="/contact" className="btn btn-primary footer__ctabtn">
-            Start a conversation <span className="arrow" aria-hidden="true">→</span>
-          </Link>
-        </motion.div>
+        {showCta && (
+          <motion.div
+            className="footer__cta"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="footer__ctacopy">
+              <span className="eyebrow">Let’s build together</span>
+              <h2 className="footer__ctatitle">Put a proven automotive bench behind your next program.</h2>
+              <p className="footer__ctatext">Same-day deployment · 25–45% buffer bench · a decade of delivery.</p>
+            </div>
+            <Link to="/contact" className="btn btn-primary footer__ctabtn">
+              Start a conversation <span className="arrow" aria-hidden="true">→</span>
+            </Link>
+          </motion.div>
+        )}
 
         <div className="footer__grid">
           <div className="footer__brandcol">
@@ -2438,14 +2499,14 @@ export default function Footer() {
           </div>
 
           <div className="footer__col">
-            <h3>Navigate</h3>
+            <h2 className="footer__coltitle">Navigate</h2>
             {navLinks.map((l) => (
               <Link key={l.to} to={l.to}>{l.label}</Link>
             ))}
           </div>
 
           <div className="footer__col">
-            <h3>Capabilities</h3>
+            <h2 className="footer__coltitle">Capabilities</h2>
             <Link to="/services">Embedded SW Stacks</Link>
             <Link to="/services">Test Automation</Link>
             <Link to="/expertise">HiL &amp; V&amp;V</Link>
@@ -2453,7 +2514,7 @@ export default function Footer() {
           </div>
 
           <div className="footer__col">
-            <h3>Engage</h3>
+            <h2 className="footer__coltitle">Engage</h2>
             <Link to="/careers">ODC Model</Link>
             <Link to="/careers">Deputation Model</Link>
             <Link to="/careers">Campus Connect</Link>
@@ -4712,23 +4773,22 @@ export default function NotFoundArt() {
 ## `src/components/Page.jsx`
 
 ```jsx
-import { motion } from 'framer-motion'
-
 /**
  * Consistent page-level enter transition.
+ *
+ * Driven by a CSS keyframe rather than Framer's initial/animate pair. With
+ * Framer, the prerendered HTML carried `style="opacity:0"` on this wrapper, so
+ * every page was invisible until React hydrated and the animation ran — which
+ * threw away the first-paint benefit of prerendering for the whole document
+ * and left no-JS readers with a blank page. A CSS animation starts the moment
+ * the stylesheet applies, before any script executes, and still replays on
+ * client-side navigation because the router mounts a fresh element.
+ *
  * `will-change` is intentionally omitted — the transform is short-lived and
  * promoting every page to its own layer costs more than it saves.
  */
 export default function Page({ children }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  )
+  return <div className="page-enter">{children}</div>
 }
 ```
 
@@ -5180,6 +5240,14 @@ export function VModel() {
   const right = [
     ['Unit Testing', 450, 200], ['Integration & HiL', 545, 120], ['System Validation', 640, 40],
   ]
+  // Left leg pairs with the right leg it is verified by (System Design ↔
+  // Integration & HiL, etc.); Implementation sits alone at the apex.
+  const stages = [
+    { name: 'Requirements', verifiedBy: 'System Validation' },
+    { name: 'System Design', verifiedBy: 'Integration & HiL' },
+    { name: 'SW Architecture', verifiedBy: 'Unit Testing' },
+    { name: 'Implementation', verifiedBy: null },
+  ]
   return (
     <section className="xp-vmodel" ref={ref}>
       <div className="container">
@@ -5189,7 +5257,29 @@ export function VModel() {
           <p className="section-lead mx-auto" style={{ textAlign: 'center' }}>Every AUTO-CAN engagement follows the automotive V-model — requirements on the way down, verification all the way up.</p>
         </Reveal>
         <div className="xp-vmodel__stage">
-          <svg viewBox="0 0 700 340" className="xp-vmodel__svg" aria-hidden="true">
+          {/*
+            The SVG is decorative and hidden from assistive tech, and on narrow
+            screens it scales to unreadable ~5px labels, so the same stages are
+            also rendered as an HTML list: visible on mobile in place of the SVG,
+            visually hidden (but read out) on desktop.
+          */}
+          <ol className="xp-vmodel__list" aria-label="V-model stages">
+            {stages.map(({ name, verifiedBy }) => (
+              <li key={name} className="xp-vmodel__row">
+                <span className="xp-vmodel__step xp-vmodel__step--left">{name}</span>
+                {verifiedBy && (
+                  <>
+                    <span className="xp-vmodel__link" aria-hidden="true" />
+                    <span className="xp-vmodel__step xp-vmodel__step--right">
+                      <span className="sr-only">verified by </span>{verifiedBy}
+                    </span>
+                  </>
+                )}
+              </li>
+            ))}
+          </ol>
+          {/* 20px of horizontal slack so the outer labels are not clipped at the edges. */}
+          <svg viewBox="-20 0 740 340" className="xp-vmodel__svg" aria-hidden="true">
             <motion.path
               d="M 60 50 L 345 295 L 640 50"
               fill="none" stroke="url(#vgrad)" strokeWidth="2.5" strokeLinecap="round"
@@ -5202,12 +5292,24 @@ export function VModel() {
                 <stop offset="100%" stopColor="#818CF8" />
               </linearGradient>
             </defs>
-            {[...left, ...right].map(([label, x, y], i) => (
-              <motion.g key={label} initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.15 * i, duration: 0.4 }}>
-                <circle cx={x} cy={y} r="7" fill="#04060B" stroke={i < 4 ? '#818CF8' : '#22D3EE'} strokeWidth="2.5" />
-                <text x={x} y={y - 16} textAnchor="middle" className="xp-vmodel__label">{label}</text>
-              </motion.g>
-            ))}
+            {[...left, ...right].map(([label, x, y], i) => {
+              // Labels sit clear of the V: the two top nodes keep theirs above
+              // (the diagonal only leaves them downward), the apex takes its
+              // below, and the mid-leg nodes — which the line used to run
+              // straight through — get theirs beside, on the outside of the V.
+              const top = i === 0 || i === 6
+              const apex = i === 3
+              const onLeft = i < 3
+              const tx = top || apex ? x : onLeft ? x - 14 : x + 16
+              const ty = top ? y - 16 : apex ? y + 28 : y + 4.5
+              const anchor = top || apex ? 'middle' : onLeft ? 'end' : 'start'
+              return (
+                <motion.g key={label} initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.15 * i, duration: 0.4 }}>
+                  <circle cx={x} cy={y} r="7" fill="#04060B" stroke={i < 4 ? '#818CF8' : '#22D3EE'} strokeWidth="2.5" />
+                  <text x={tx} y={ty} textAnchor={anchor} className="xp-vmodel__label">{label}</text>
+                </motion.g>
+              )
+            })}
             <motion.line x1="150" y1="120" x2="545" y2="120" stroke="#818CF8" strokeDasharray="5 7" strokeOpacity="0.3" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 1.2 }} />
             <motion.line x1="240" y1="200" x2="450" y2="200" stroke="#818CF8" strokeDasharray="5 7" strokeOpacity="0.3" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 1.35 }} />
           </svg>
@@ -5948,6 +6050,14 @@ ul { list-style: none; }
 .hero-in {
   animation: acHeroIn 0.7s var(--ease-lux) both;
 }
+
+/* Page-level entrance (see components/Page.jsx). Ends on `transform: none` so
+   the wrapper stops acting as a containing block once it has settled. */
+@keyframes acPageIn {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.page-enter { animation: acPageIn 0.45s var(--ease-lux) both; }
 .anim-head { perspective: 800px; }
 .anim-head__w {
   display: inline-block;
@@ -6570,10 +6680,10 @@ ul { list-style: none; }
 }
 .info-row .k {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-dim);
 }
 .info-row .v { font-size: 0.95rem; margin-top: 3px; }
 .info-row .v a { color: var(--cyan-300); display: inline-flex; align-items: center; min-height: 26px; }
@@ -6587,10 +6697,10 @@ ul { list-style: none; }
 .contact-grid > * { min-width: 0; }
 .field label {
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-dim);
   transition: color 0.25s ease;
 }
 .field:focus-within label { color: var(--cyan-300); }
@@ -6785,6 +6895,61 @@ ul { list-style: none; }
   letter-spacing: 0.04em;
 }
 
+/* HTML twin of the diagram. On desktop it exists only for assistive tech;
+   under 760px it replaces the SVG, whose labels shrink below legibility. */
+.xp-vmodel__list {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 760px) {
+  .xp-vmodel__svg { display: none; }
+  .xp-vmodel__list {
+    position: static !important;
+    width: auto; height: auto;
+    margin: 0; padding: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+  }
+  .xp-vmodel__row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+  }
+  .xp-vmodel__row:last-child { grid-template-columns: 1fr; justify-items: center; }
+  .xp-vmodel__step {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    text-align: center;
+  }
+  .xp-vmodel__step--left { box-shadow: inset 3px 0 0 #818CF8; }
+  .xp-vmodel__step--right { box-shadow: inset -3px 0 0 #22D3EE; }
+  .xp-vmodel__row:last-child .xp-vmodel__step--left {
+    box-shadow: inset 0 -3px 0 #22D3EE;
+    min-width: 60%;
+  }
+  .xp-vmodel__link {
+    width: 22px;
+    border-top: 1px dashed rgba(129, 140, 248, 0.45);
+  }
+  .xp-vmodel__stage { padding: 24px 16px; }
+}
+
 /* ============================================================
    XP — Digital Twin
    ============================================================ */
@@ -6854,8 +7019,13 @@ ul { list-style: none; }
 }
 @media (max-width: 640px) {
   .hero { padding-top: 120px; min-height: auto; }
-  .hero__meta { gap: 10px; }
+  /* Stacked buttons at differing widths read as a hierarchy that isn't there. */
+  .hero__actions { flex-direction: column; align-items: stretch; }
+  .hero__actions .btn { width: 100%; justify-content: center; }
+  /* Three chips wrapped 1 + 2; a fixed two-column grid keeps the row tidy. */
+  .hero__meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .hero__meta-item { padding: 12px 16px; }
+  .hero__meta-item:first-child { grid-column: 1 / -1; }
   .hero__scroll { display: none; }
   .chip3d { font-size: 0.72rem; padding: 8px 13px; }
   .cta-band { padding: 56px 24px; }
@@ -7238,7 +7408,7 @@ ul { list-style: none; }
 
 @media (max-width: 620px) {
   .whud__status { min-width: 0; }
-  .whud { font-size: 9px; gap: 7px; padding: 7px 11px; }
+  .whud { font-size: 10px; gap: 7px; padding: 7px 11px; }
   .whud__cell, .whud__bar { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -7331,7 +7501,7 @@ ul { list-style: none; }
 
 @media (max-width: 760px) {
   .statstrip { display: none; }          /* keep mobile clean */
-  .camtag { bottom: 10px; left: 12px; font-size: 9px; }
+  .camtag { bottom: 10px; left: 12px; font-size: 10px; }
 }
 
 /* ============================================================

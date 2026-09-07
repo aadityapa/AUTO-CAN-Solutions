@@ -1,7 +1,7 @@
 export const pageSeo = {
   home: {
     path: '/', title: 'AUTO-CAN Solutions | Automotive Embedded Software & HiL Testing',
-    description: 'AUTO-CAN Solutions is an automotive embedded software and engineering company (est. 2013, Jaipur India). HiL testing, AUTOSAR, ADAS, CAN/LIN/UDS stacks, test automation and R&D for OEMs and Tier-1 suppliers.',
+    description: 'Automotive embedded software and engineering partner since 2013: HiL testing, AUTOSAR, ADAS, CAN/LIN/UDS stacks, test automation and R&D for OEMs and Tier-1 suppliers.',
     keywords: 'automotive embedded software, HiL testing, AUTOSAR, ADAS, ISO 26262, CAN LIN UDS, ECU testing, automotive engineering India',
     breadcrumb: [{ name: 'Home', path: '/' }],
   },
@@ -24,7 +24,7 @@ export const pageSeo = {
     breadcrumb: [{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }],
   },
   careers: {
-    path: '/careers', type: 'CollectionPage', title: 'Careers, Engagement Models & Campus Connect | AUTO-CAN Solutions',
+    path: '/careers', type: 'CollectionPage', title: 'Careers & Engagement Models | AUTO-CAN Solutions',
     description: 'ODC and Deputation engagement models, structured Learning & Development, and Campus Connect partnerships that turn fresh talent into automotive embedded engineers.',
     keywords: 'automotive engineering careers, ODC model, deputation model, campus connect, automotive embedded training, Jaipur Pune delivery centres',
     breadcrumb: [{ name: 'Home', path: '/' }, { name: 'Careers', path: '/careers' }],
