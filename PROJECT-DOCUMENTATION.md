@@ -2618,12 +2618,15 @@ export function XRayButton() {
 }
 
 // Live "operations console" header — sells a working robotic AI workshop.
+// Status words, not measurements: "DIGITAL-TWIN SYNC · 99.2%" restated the
+// same invented parity figure removed from the digital-twin panel, and
+// "SEAM SCAN · 1,248 PTS" reused the fabricated 1,248 motif.
 const WHUD_LINES = [
   'ROBOTIC WELD CELL · ACTIVE',
-  'DIGITAL-TWIN SYNC · 99.2%',
+  'DIGITAL-TWIN SYNC · LOCKED',
   'AI VISION INSPECT · PASS',
   'TORQUE CALIBRATION · OK',
-  'SEAM SCAN · 1,248 PTS',
+  'SEAM SCAN · COMPLETE',
 ]
 export function WorkshopHUD() {
   const [i, setI] = useState(0)
