@@ -4,13 +4,13 @@ import { company, navLinks } from '../data/site'
 import './Footer.css'
 
 /**
- * Routes that already end in a conversion point: Home, Services and Careers
+ * Routes that already end in a conversion point: Home, Services, Careers and Training
  * each close with their own CTA band, and Contact *is* the destination. On
  * those pages the global band would stack a second "Start a conversation"
  * directly beneath the first — or, on Contact, link the visitor back to the
  * form they are already looking at.
  */
-const ROUTES_WITH_OWN_CTA = new Set(['/', '/services', '/careers', '/contact'])
+const ROUTES_WITH_OWN_CTA = new Set(['/', '/services', '/careers', '/training', '/contact'])
 
 export default function Footer() {
   const { pathname } = useLocation()
@@ -72,6 +72,7 @@ export default function Footer() {
             <Link to="/careers">ODC Model</Link>
             <Link to="/careers">Deputation Model</Link>
             <Link to="/careers">Campus Connect</Link>
+            <Link to="/training">Training Program</Link>
             <Link to="/contact">Contact</Link>
           </div>
         </div>

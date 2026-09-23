@@ -36,6 +36,9 @@ export default function Careers() {
         <RevealGroup className="grid grid-2 tilt-grid" style={{ marginTop: 48 }}>{training.map((t) => (
           <TiltCard className="card icard" key={t.no} variants={fadeUp}><span className="card-num">{t.no.padStart(2, '0')}</span><h3 className="icard__title">{t.title}</h3><p className="icard__text">{t.text}</p></TiltCard>
         ))}</RevealGroup>
+        <Reveal style={{ marginTop: 32 }}>
+          <MagneticButton to="/training" className="btn btn-ghost">Explore the full training roadmap <span className="arrow" aria-hidden="true">→</span></MagneticButton>
+        </Reveal>
       </div></section>
       <section className="section pp-section" style={{ paddingTop: 0 }}><div className="container">
         <SectionHeader eyebrow={peoplePayroll.eyebrow} title='Built to support <span class="gradient-text">our people</span>, not just our projects' lead={peoplePayroll.lead} />

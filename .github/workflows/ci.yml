@@ -51,7 +51,7 @@ jobs:
           [ -s "$file" ] || { echo "::error::$file missing"; exit 1; }
           python3 -c "import xml.dom.minidom,sys; xml.dom.minidom.parse('$file')"
           count=$(grep -c '<loc>' "$file")
-          [ "$count" -eq 8 ] || { echo "::error::expected 8 URLs, found $count"; exit 1; }
+          [ "$count" -eq 9 ] || { echo "::error::expected 9 URLs, found $count"; exit 1; }
           if grep -q 'localhost\|auto-can\.in/' "$file"; then
             echo "::error::sitemap points at a non-production domain"
             exit 1
@@ -60,7 +60,7 @@ jobs:
       - name: Check every route prerendered to HTML
         run: |
           missing=0
-          for page in index services expertise about careers contact \
+          for page in index services expertise about careers training contact \
                       privacy-policy terms-and-conditions 404; do
             if [ ! -s "dist/$page.html" ]; then
               echo "::error::dist/$page.html is missing or empty"

@@ -171,5 +171,6 @@ export const navLinks = [
   { to: '/expertise', label: 'Expertise' },
   { to: '/about', label: 'About' },
   { to: '/careers', label: 'Careers' },
+  { to: '/training', label: 'Training' },
   { to: '/contact', label: 'Contact' },
 ]

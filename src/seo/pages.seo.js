@@ -29,6 +29,12 @@ export const pageSeo = {
     keywords: 'automotive engineering careers, ODC model, deputation model, campus connect, automotive embedded training, Jaipur Pune delivery centres',
     breadcrumb: [{ name: 'Home', path: '/' }, { name: 'Careers', path: '/careers' }],
   },
+  training: {
+    path: '/training', type: 'CollectionPage', title: 'Technical Training Roadmap | AUTO-CAN Solutions',
+    description: 'AUTO-CAN Solutions training program: Automotive Embedded, Linux & Android, and AI domains with Developer and Tester tracks, hands-on practicals and evaluation-gated progression.',
+    keywords: 'automotive embedded training, CAN UDS CANoe CAPL training, AUTOSAR training, embedded Linux training, Android AOSP AAOS training, AI LLM RAG training, developer and tester tracks',
+    breadcrumb: [{ name: 'Home', path: '/' }, { name: 'Training', path: '/training' }],
+  },
   privacy: {
     path: '/privacy-policy', title: 'Privacy Policy | AUTO-CAN Solutions',
     description: 'How AUTO-CAN Solutions handles information submitted through this website — what we collect, how it is used, third-party services, retention, and your rights.',

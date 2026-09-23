@@ -40,6 +40,7 @@ const PAGES = [
   { path: '/expertise', changefreq: 'monthly', priority: '0.8', sources: ['src/pages/Expertise.jsx', ...SITE_DATA] },
   { path: '/about', changefreq: 'monthly', priority: '0.7', sources: ['src/pages/About.jsx', ...SITE_DATA] },
   { path: '/careers', changefreq: 'monthly', priority: '0.7', sources: ['src/pages/Careers.jsx', ...SITE_DATA] },
+  { path: '/training', changefreq: 'monthly', priority: '0.7', sources: ['src/pages/Training.jsx', 'src/data/training.js', ...SITE_DATA] },
   { path: '/contact', changefreq: 'yearly', priority: '0.6', sources: ['src/pages/Contact.jsx', ...SITE_DATA] },
   { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3', sources: ['src/pages/PrivacyPolicy.jsx', ...LEGAL_DATA] },
   { path: '/terms-and-conditions', changefreq: 'yearly', priority: '0.3', sources: ['src/pages/Terms.jsx', ...LEGAL_DATA] },

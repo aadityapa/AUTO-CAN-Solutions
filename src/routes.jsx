@@ -4,6 +4,7 @@ import Services from './pages/Services'
 import Expertise from './pages/Expertise'
 import About from './pages/About'
 import Careers from './pages/Careers'
+import Training from './pages/Training'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -18,6 +19,7 @@ export const routes = [
       { path: 'expertise', element: <Expertise /> },
       { path: 'about', element: <About /> },
       { path: 'careers', element: <Careers /> },
+      { path: 'training', element: <Training /> },
       { path: 'contact', element: <Contact /> },
       { path: 'privacy-policy', element: <PrivacyPolicy /> },
       { path: 'terms-and-conditions', element: <Terms /> },
